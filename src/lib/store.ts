@@ -1,3 +1,10 @@
+import { Service } from './service';
 import { writable, derived } from "svelte/store";
+import { AsideType } from "./types";
 
-export const isAddOpen = writable(false);
+export const service = writable(new Service());
+export const isOpen = writable(false);
+export const currentAside = writable(AsideType.Student)
+
+export const localities = writable([]);
+
