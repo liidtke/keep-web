@@ -2,7 +2,7 @@
 	import { AsideType } from "./types";
 	import { isOpen, currentAside } from '$lib/store';
 	import StudentAdd from '$lib/StudentAdd.svelte';
-	import AddCourse from '$lib/AddCourse.svelte';
+	import CourseAdd from '$lib/CourseAdd.svelte';
 	import LocalityAdd from "./LocalityAdd.svelte";
   
 </script>
@@ -15,7 +15,7 @@
 
 {#if $currentAside == AsideType.Course}
 <aside class="l-aside" id="aside-panel" class:is-collapsed={!$isOpen}>
-	<AddCourse></AddCourse>
+	<CourseAdd></CourseAdd>
 </aside>
 {/if}
 

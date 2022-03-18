@@ -1,16 +1,23 @@
 <script lang="ts">
-  import { isOpen, currentAside } from "$lib/store";
+  import { isOpen, currentAside, students, service } from "$lib/store";
   import { goto } from "$app/navigation";
   import { AsideType } from "$lib/types";
   import { onMount } from "svelte";
 
   onMount(async () => {
     currentAside.set(AsideType.Student);
+    get();
   });
 
   function navigate(id) {
     goto("/alunos/" + id);
   }
+
+  async function get(){
+    let sts = await $service.getStudents();
+    students.set(sts);
+  }
+
 </script>
 
 <div class="p-strip">
@@ -26,74 +33,34 @@
     <thead>
       <tr>
         <th>Nome</th>
-        <th>Matrícula</th>
         <th>Número</th>
-        <th>Admissão</th>
+        <th>Matrícula</th>
+        <!-- <th>Admissão</th> -->
+        <th>Observações</th>
         <th />
       </tr>
     </thead>
     <tbody>
+      {#each $students as student }
       <tr>
-        <td>José Carlos Silva</td>
-        <td>VX-12PP</td>
-        <th>218</th>
-        <th>02/12/2021</th>
+        <td>{student.Name ?? ''}</td>
+        <td>{student.Number}</td>
+        <td>{student.Registration ?? ''}</td>
+        <!-- <td>{student.Admission ?? ''}</td> -->
+        <td>{student.Observations ?? ''}</td>
         <td>
           <button
-            class="u-toggle is-dense"
-            aria-controls="expanded-row"
-            aria-expanded="false"
-            data-shown-text="Hide"
-            data-hidden-text="Show"
-            on:click={() => navigate(3)}>Detalhes</button
+          class="u-toggle is-dense"
+          aria-controls="expanded-row"
+          aria-expanded="false"
+          data-shown-text="Hide"
+          data-hidden-text="Show"
+          on:click={() => navigate(student.Id)}>Detalhes</button
           >
         </td>
       </tr>
-      <tr>
-        <td>Mário Gonçalves Lima</td>
-        <td>1U-12444</td>
-        <th>219</th>
-        <th>03/12/2021</th>
-        <td>
-          <button
-            class="u-toggle is-dense"
-            aria-controls="expanded-row"
-            aria-expanded="false"
-            data-shown-text="Hide"
-            data-hidden-text="Show">Detalhes</button
-          >
-        </td>
-      </tr>
-      <tr>
-        <td>Flávio Carvalho</td>
-        <td>1X-1212</td>
-        <th>220</th>
-        <th>01/01/2022</th>
-        <td>
-          <button
-            class="u-toggle is-dense"
-            aria-controls="expanded-row"
-            aria-expanded="false"
-            data-shown-text="Hide"
-            data-hidden-text="Show">Detalhes</button
-          >
-        </td>
-      </tr>
-      <tr>
-        <td>Grabiel Silva</td>
-        <td>2X-1212</td>
-        <th>221</th>
-        <th>01/01/2022</th>
-        <td>
-          <button
-            class="u-toggle is-dense"
-            aria-controls="expanded-row"
-            aria-expanded="false"
-            data-shown-text="Hide"
-            data-hidden-text="Show">Detalhes</button
-          >
-        </td>
-      </tr>
+      {/each}
+     
     </tbody>
     <!-- <tfoot>
       <tr>

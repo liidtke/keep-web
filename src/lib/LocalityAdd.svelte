@@ -1,52 +1,53 @@
 <script lang="ts">
-  import { isOpen, service } from '$lib/store';
-  import { onMount } from 'svelte';
-  import type { ILocality } from './types';
+  import { isOpen, service, locality } from "$lib/store";
+  import { onMount } from "svelte";
+  import type { ILocality } from "./types";
 
-  
-  let locality:ILocality = {
-    id:0,
-    name:"",
-    number:"",
-    address:null,
-    city:null,
-    zipCode:null,
-    state:null,
-    box:null,
-    address2:null,
-  };
-  
+  let currentLocality: ILocality = {} as any;
+
+  onMount(async () => {
+    locality.subscribe((l) => {
+      currentLocality = l as any;
+      //console.log('changing locality', l)
+    });
+  });
+
+
   let result;
-  
+
   isOpen.subscribe((value) => openChanged(value));
 
-  function openChanged(value){
+  function openChanged(value) {
     result = null;
-    locality = {} as any;
-  }
-  
-  async function save(){
-    result = null;
-    if(!locality || !locality.name){
-      result = {message:"Dados necessários"}
-      return;
-    }
-
-    let res = await $service.saveLocality(locality);
-    if(res.isSuccess){
-      isOpen.set(false)
-    }
-    else {
-      result = res;
+    if(value === false){
+      currentLocality = {} as any;
     }
     
   }
 
+  async function save() {
+    result = null;
+    if (!currentLocality || !currentLocality.Name) {
+      result = { message: "Dados necessários" };
+      return;
+    }
+
+    let res = await $service.saveLocality(currentLocality);
+    if (res.isSuccess) {
+      isOpen.set(false);
+    } else {
+      result = res;
+    }
+  }
 </script>
 
 <div class="p-panel">
   <div class="p-panel__header">
+    {#if currentLocality.Id}
+    <h4 class="p-panel__title">Editar Localidade</h4>
+    {:else}
     <h4 class="p-panel__title">Nova Localidade</h4>
+    {/if}
     <div class="p-panel__controls">
       <button
         on:click={() => isOpen.set(false)}
@@ -56,16 +57,15 @@
     </div>
   </div>
   <div class="p-panel__content">
-
     {#if result}
-    <div class="p-notification--caution">
-      <div class="p-notification__content">
-        <h5 class="p-notification__title">Erro ao Salvar</h5>
-        {#if result.message}
-        <p class="p-notification__message">{result.message}</p>
-        {/if}
+      <div class="p-notification--caution">
+        <div class="p-notification__content">
+          <h5 class="p-notification__title">Erro ao Salvar</h5>
+          {#if result.message}
+            <p class="p-notification__message">{result.message}</p>
+          {/if}
+        </div>
       </div>
-    </div>
     {/if}
 
     <div class="p-form p-form--stacked">
@@ -75,7 +75,13 @@
         </div>
         <div class="col-8">
           <div class="p-form__control">
-            <input type="text" id="name" name="name" autocomplete="name" bind:value={locality.name} />
+            <input
+              type="text"
+              id="name"
+              name="name"
+              autocomplete="name"
+              bind:value={currentLocality.Name}
+            />
           </div>
         </div>
       </div>
@@ -86,7 +92,13 @@
         </div>
         <div class="col-8">
           <div class="p-form__control">
-            <input type="text" id="addr" name="Number" autocomplete="name" bind:value={locality.address} />
+            <input
+              type="text"
+              id="addr"
+              name="Number"
+              autocomplete="name"
+              bind:value={currentLocality.Address}
+            />
           </div>
         </div>
       </div>
@@ -97,7 +109,13 @@
         </div>
         <div class="col-8">
           <div class="p-form__control">
-            <input type="text" id="number" name="Number" autocomplete="name" bind:value={locality.number} />
+            <input
+              type="text"
+              id="number"
+              name="Number"
+              autocomplete="name"
+              bind:value={currentLocality.Number}
+            />
           </div>
         </div>
       </div>
@@ -108,7 +126,13 @@
         </div>
         <div class="col-8">
           <div class="p-form__control">
-            <input type="text" id="ad2" name="Number" autocomplete="name" bind:value={locality.address2} />
+            <input
+              type="text"
+              id="ad2"
+              name="Number"
+              autocomplete="name"
+              bind:value={currentLocality.Address2}
+            />
           </div>
         </div>
       </div>
@@ -119,7 +143,13 @@
         </div>
         <div class="col-8">
           <div class="p-form__control">
-            <input type="text" id="zip" name="Number" autocomplete="name" bind:value={locality.zipCode} />
+            <input
+              type="text"
+              id="zip"
+              name="Number"
+              autocomplete="name"
+              bind:value={currentLocality.ZipCode}
+            />
           </div>
         </div>
       </div>
@@ -130,7 +160,13 @@
         </div>
         <div class="col-8">
           <div class="p-form__control">
-            <input type="text" id="city" name="Number" autocomplete="name" bind:value={locality.city} />
+            <input
+              type="text"
+              id="city"
+              name="Number"
+              autocomplete="name"
+              bind:value={currentLocality.City}
+            />
           </div>
         </div>
       </div>
@@ -141,7 +177,13 @@
         </div>
         <div class="col-8">
           <div class="p-form__control">
-            <input type="text" id="state" name="Number" autocomplete="name" bind:value={locality.state} />
+            <input
+              type="text"
+              id="state"
+              name="Number"
+              autocomplete="name"
+              bind:value={currentLocality.State}
+            />
           </div>
         </div>
       </div>
@@ -152,18 +194,31 @@
         </div>
         <div class="col-8">
           <div class="p-form__control">
-            <input type="text" id="box" name="POBox" autocomplete="name" bind:value={locality.box} />
+            <input
+              type="text"
+              id="box"
+              name="POBox"
+              autocomplete="name"
+              bind:value={currentLocality.Box}
+            />
           </div>
         </div>
-
       </div>
 
       <div class="row">
-        <div class="col-6">
-          <button class="p-button u-float-left" name="add-details" on:click={() => isOpen.set(false)}>Cancelar</button>
+        <div class="col-small-1 col-medium-3 col-6 ">
+          <button
+            class="p-button u-float-left"
+            name="add-details"
+            on:click={() => isOpen.set(false)}>Cancelar</button
+          >
         </div>
-        <div class="col-6">
-          <button class="p-button--positive u-float-right" name="add-details" on:click={save}>Salvar</button>
+        <div class="col-small-3 col-medium-3 col-6 ">
+          <button
+            class="p-button--positive u-float-right"
+            name="add-details"
+            on:click={save}>Salvar</button
+          >
         </div>
       </div>
     </div>

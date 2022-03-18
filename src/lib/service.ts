@@ -1,4 +1,5 @@
 import { Result } from '$lib/result'
+import { localities } from './store';
 
 export class Service {
 
@@ -15,6 +16,49 @@ export class Service {
       // 'Authorization': `bearer ${this.token}`
     }
   };
+
+
+  async getStudents() {
+    return [{
+      Id: "123",
+      Name: "Carlos Silva",
+      Number: "123",
+      Registration: "AFG-32",
+      Radius: null,
+      Cell: "012",
+      Pav: "12",
+      Xad: "001",
+      Referer: "A",
+      Observations: "",
+      Locality: null,
+      LocalityId: null,
+      AdmissionDate: Date,
+      CreationDate: Date,
+      CreatedBy: "Aldo"
+    },
+    {
+      Id: "123",
+      Name: "Felipe Nogueira",
+      Number: "4511",
+      Registration: "AFG-2311",
+      Radius: null,
+      Cell: "012",
+      Pav: "12",
+      Xad: "001",
+      Referer: "A",
+      Observations: "Criado agora a pouco",
+      Locality: null,
+      LocalityId: null,
+      AdmissionDate: Date,
+      CreationDate: Date,
+      CreatedBy: "Aldo"
+    }
+  ]
+  }
+
+  async saveStudent() {
+    return Result.Succeed();
+  }
 
   async getLocalities() {
     let request = await fetch(this.api + `localities`, {
@@ -60,29 +104,5 @@ export class Service {
       return Result.Error(message);
     }
   }
-
-  getAllLocalities() {
-    return [{
-      id: 1,
-      name: "Teste 01",
-      address: "Rua Teste 001",
-      number: "123",
-      zipCode: "13184-233",
-      box: null,
-      city: "Hortolândia",
-      state: "SP",
-    },
-    {
-      id: 2,
-      name: "Hortolândia II",
-      address: "Rua Teste 003",
-      zipCode: "0301123-122",
-      box: null,
-      city: "Hortolândia",
-      state: "SP",
-    }
-    ];
-  }
-
 
 }

@@ -12,8 +12,9 @@
 <div class="p-strip back">
 	<section class="p-strip is-bordered">
 		<div class="row">
-			<div class="col-8">
-				<h2>Cadastro de Alunos - Ministério Evangelístico</h2>
+			<div class="col-12">
+				<h1>A VOZ DA PROFECIA - FILIAL UNASP-HT</h1>
+				<h2>Cadastro de Alunos</h2>
 				<p>
 					Este é um protótipo de Sistema para auxiliar o ministério evangelístico da Igreja UNASP-HT com os presos.
 				</p>

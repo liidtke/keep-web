@@ -2,9 +2,18 @@
   import { isOpen } from '$lib/store';
   import DateInput from './components/DateInput.svelte';
   import LocalitySelect from '$lib/components/LocalitySelect.svelte';
+  import type { IPerson } from './types';
 
-  let student = {
-    date:"",
+  let student : IPerson = {
+  } as any
+
+  function save(){
+    console.log(student);
+  }
+
+  function cancel(){
+    student = {} as any;
+    isOpen.set(false);
   }
 
 </script>
@@ -29,7 +38,7 @@
 
         <div class="col-8">
           <div class="p-form__control">
-            <input type="text" id="full-name-stacked" name="fullName" autocomplete="name" />
+            <input type="text" id="full-name-stacked" name="fullName" autocomplete="name" bind:value={student.Name} />
           </div>
         </div>
       </div>
@@ -41,7 +50,7 @@
 
         <div class="col-8">
           <div class="p-form__control">
-            <input type="text" id="number" name="Number" autocomplete="name" />
+            <input type="text" id="number" name="Number" autocomplete="name" bind:value={student.Number} />
           </div>
         </div>
       </div>
@@ -59,6 +68,7 @@
               name="username-stacked"
               autocomplete="username"
               aria-describedby="exampleHelpTextMessage"
+              bind:value={student.Registration}
             />
             <!-- <p class="p-form-help-text" id="exampleHelpTextMessage">30 characters or fewer.</p> -->
           </div>
@@ -72,7 +82,7 @@
 
         <div class="col-8">
           <div class="p-form__control">
-            <LocalitySelect></LocalitySelect>
+            <LocalitySelect bind:selected={student.Locality}></LocalitySelect>
             <p class="p-form-help-text" id="exampleHelpTextMessage">Presídio - Caso não exista adicione um novo</p>
           </div>
         </div>
@@ -91,6 +101,7 @@
               class="p-form-validation__input"
               name="raio"
               autocomplete="raio"
+              bind:value={student.Radius}
             />
           </div>
         </div>
@@ -110,6 +121,7 @@
               aria-invalid="true"
               name="cela"
               autocomplete="cela"
+              bind:value={student.Cell}
             />
           </div>
         </div>
@@ -129,6 +141,7 @@
               name="pav"
               autocomplete="pav"
               aria-describedby="username-error-message-stacked"
+              bind:value={student.Pav}
             />
           </div>
         </div>
@@ -149,6 +162,7 @@
               name="username-stackederror"
               autocomplete="username"
               aria-describedby="username-error-message-stacked"
+              bind:value={student.Xad}
             />
           </div>
         </div>
@@ -161,7 +175,7 @@
 
         <div class="col-8">
           <div class="p-form__control">
-            <input type="text" name="ind" autocomplete="ind" />
+            <input type="text" name="ind" autocomplete="ind" bind:value={student.Referer} />
           </div>
         </div>
       </div>
@@ -178,6 +192,7 @@
               id="obs"
               name="address-optional-stacked"
               autocomplete="address-line3"
+              bind:value={student.Observations}
             />
           </div>
         </div>
@@ -190,9 +205,8 @@
 
         <div class="col-8">
           <div class="p-form__control">
-            <DateInput bind:value={student.date} today={true}/>
+            <DateInput bind:value={student.AdmissionDate} today={true}/>
              
-            
           </div>
         </div>
       </div>
@@ -224,11 +238,11 @@
       </fieldset> -->
 
       <div class="row">
-        <div class="col-6">
-          <button class="p-button u-float-left" name="add-details">Adicionar Localidade</button>
+        <div class="col-small-1 col-medium-3 col-6 ">
+          <button class="p-button u-float-left" name="add-details" on:click={cancel}>Cancelar</button>
         </div>
-        <div class="col-6">
-          <button class="p-button--positive u-float-right" name="add-details">Salvar</button>
+        <div class="col-small-3 col-medium-3 col-6 ">
+          <button class="p-button--positive u-float-right" name="add-details" on:click={save}>Salvar</button>
         </div>
       </div>
     </div>

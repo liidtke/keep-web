@@ -1,22 +1,26 @@
 <script lang="ts">
-  import { isOpen, currentAside, service, localities } from "$lib/store";
+  import { isOpen, currentAside, service, localities, locality } from "$lib/store";
   import { goto } from "$app/navigation";
   import { AsideType } from "$lib/types";
   import { onMount } from "svelte";
 
   onMount(async () => {
     currentAside.set(AsideType.Locality);
-    load();
+    await load();
   });
 
-  function load() {
+  async function load() {
     if ($localities == null || $localities.length == 0) {
-      localities.set($service.getAllLocalities());
+      let result = await $service.getLocalities();
+      localities.set(result);
     }
+
+    //console.log($localities);
   }
 
-  function edit(locality){
-
+  function edit(l){
+    locality.set(l);
+    isOpen.set(true);
   }
 </script>
 
@@ -37,9 +41,9 @@
     <tbody>
       {#each $localities as locality}
         <tr>
-          <td>{locality.name}</td>
-          <td>{locality.address}</td>
-          <td>{locality.zipCode}</td>
+          <td>{locality.Name ?? ''}</td>
+          <td>{locality.Address ?? ''}</td>
+          <td>{locality.ZipCode ?? ''}</td>
           <td>
             <button
             class="u-toggle is-dense"

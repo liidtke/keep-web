@@ -9,9 +9,41 @@
   let student = {
     name: "Gabriel Silva",
   };
+  let showDetails = true;
 
-  //onMount(async () => {
-  //})
+  onMount(async () => {
+    getCourses();
+  })
+
+  let isAddingCourse:boolean = false;
+  let course = {};
+
+  async function getStudent(){
+
+  }
+
+  async function getCourses(){
+
+  }
+
+  async function getStudentCourses(){
+    
+  }
+
+  function addCourse(){
+    console.log('test');
+    isAddingCourse = true;
+  }
+
+  function saveCourse(){
+
+  }
+
+  function cancelCourse(){
+    course = {};
+    isAddingCourse = false;
+  }
+
 </script>
 
 <div class="p-strip">
@@ -25,7 +57,35 @@
     </div>
     <div class="col-12">
       <h2>Cursos</h2>
-      <button class="p-button">Inscrever</button>
+      {#if !isAddingCourse}
+      <button class="p-button" on:click={addCourse}>Inscrever</button>
+      {/if}
+
+      {#if isAddingCourse}
+          <div class="row">
+            <div class="col-6 col-small-12">
+              <h4>Inscrever Aluno</h4>
+              <div class="form">
+                <label for="type">Selecione um Curso</label>
+                <input type="text" id="type">
+
+                <label for="date">Data de Inscrição</label>
+                <input type="text" id="date">
+
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6">
+            <button class="p-button" on:click={cancelCourse}>Cancelar
+            </button>
+            <button class="p-button--positive" on:click={saveCourse}>Salvar
+            </button>
+          </div>
+         
+        </div>
+        
+      {/if}
 
       <h3>Em andamento</h3>
       <div class="row">
@@ -34,6 +94,8 @@
       </div>
 
       <div class="row">
+        
+       <div class="col-12">
         <div class="lessons">
           <table>
             <thead>
@@ -86,11 +148,17 @@
             </tbody>
           </table>
         </div>
+       </div>
+      </div>
+
+      <div class="row">
         <div class="col-6">
           <button class="p-button">Adicionar Registro</button>
           <button class="p-button--positive">Completar</button>
         </div>
-        <div class="col-6" />
+        <div class="col-6" >
+          
+        </div>
 
         <hr />
       </div>
@@ -104,9 +172,10 @@
 
 <style>
   .lessons {
-    max-height: 20vh;
+    max-height: 26vh;
     display: block;
     overflow: auto;
     border: 1px solid #b1b0b0;
+   margin-bottom: 1rem;
   }
 </style>
