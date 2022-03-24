@@ -1,5 +1,6 @@
 import { Result } from '$lib/result'
 import { localities } from './store';
+import type { ICourse } from './types';
 
 export class Service {
 
@@ -53,7 +54,7 @@ export class Service {
       CreationDate: Date,
       CreatedBy: "Aldo"
     }
-  ]
+    ]
   }
 
   async saveStudent() {
@@ -73,7 +74,7 @@ export class Service {
 
     try {
       console.log('trying', locality)
-      if (locality.id) {
+      if (locality.Id) {
         console.log('PUT')
         res = await fetch(this.api + 'localities', {
           method: 'PUT',
@@ -101,6 +102,57 @@ export class Service {
     }
     else {
       let message = await res.text();
+      return Result.Error(message);
+    }
+  }
+
+  async getCourses() :Promise<ICourse[]> {
+    let request = await fetch(this.api + `courses`, {
+      headers: this.headers,
+    });
+    let response = await request.json();
+    return response;
+  }
+
+  async saveCourse(course:ICourse) {
+    let res: Response;
+    let n = Number(course.Lessons);
+    if(isNaN(n)){
+      return Result.Error("Valor Inválido");
+    }
+    course.Lessons = n;
+
+    try {
+      console.log('trying', course)
+      if (course.Id) {
+        console.log('PUT')
+        res = await fetch(this.api + 'courses', {
+          method: 'PUT',
+          body: JSON.stringify(course),
+          headers: this.headers,
+        });
+      }
+      else {
+        console.log('posting', this.api)
+        res = await fetch(this.api + 'courses', {
+          method: 'POST',
+          headers: this.headers,
+          body: JSON.stringify(course)
+        })
+      }
+    }
+    catch (e) {
+      console.log(e);
+      return Result.Error("Não foi possível realizar a operação")
+    }
+
+    if (res.ok) {
+      let data = await res.json();
+      return Result.Ok(data);
+    }
+    else {
+      let message = await res.text();
+      console.log(message);
       return Result.Error(message);
     }
   }

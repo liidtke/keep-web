@@ -32,5 +32,11 @@ export interface IPerson {
   AdmissionDate:Date;
   CreationDate:Date;
   CreatedBy?:string;
+}
 
+export interface ICourse {
+    Id: string,
+    Name:string,
+    Lessons:number,
+    IsActive:boolean,
 }

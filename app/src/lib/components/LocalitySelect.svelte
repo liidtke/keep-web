@@ -6,8 +6,8 @@
 
 	onMount(async () => {
     if($localities == null || $localities.length == 0){
-      let localities = await $service.getLocalities();
-      localities.set(localities);
+      let all = await $service.getLocalities();
+      localities.set(all);
     }
 	});
 
