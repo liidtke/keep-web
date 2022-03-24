@@ -9,7 +9,7 @@
     Id:null,
     Name:null,
     Lessons:0,
-    IsActive:true
+    IsActive:true,
   }
 
   course.subscribe((value) => { currentCourse = value as any });
