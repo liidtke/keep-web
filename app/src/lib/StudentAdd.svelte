@@ -1,24 +1,44 @@
 <script lang="ts">
-  import { isOpen } from '$lib/store';
+  import { isOpen, service, students } from '$lib/store';
   import DateInput from './components/DateInput.svelte';
   import LocalitySelect from '$lib/components/LocalitySelect.svelte';
-  import type { IPerson } from './types';
+  import type { IStudent } from './types';
 
-  let student : IPerson = {
+  let el;
+  let message = null;
+  let student : IStudent = {
+   
   } as any
 
-  function save(){
-    console.log(student);
+  $:{
+    if(message){
+      el.scrollIntoView();
+    }
+  }
+
+  async function save(){
+    message = null;
+
+    let result = await $service.saveStudent(student);
+    if(result.isError){
+      message = result.message;
+    }
   }
 
   function cancel(){
-    student = {} as any;
+    message = null;
+    student = { } as any;
     isOpen.set(false);
+  }
+
+  async function getAll(){
+    let sts = await $service.getStudents();
+    students.set(sts);
   }
 
 </script>
 
-<div class="p-panel">
+<div class="p-panel" bind:this={el}>
   <div class="p-panel__header">
     <h4 class="p-panel__title">Novo Aluno</h4>
     <div class="p-panel__controls">
@@ -30,6 +50,16 @@
     </div>
   </div>
   <div class="p-panel__content">
+
+    {#if message}
+      <div class="p-notification--caution">
+        <div class="p-notification__content">
+          <h5 class="p-notification__title">Erro ao Salvar</h5>
+            <p class="p-notification__message">{message}</p>
+        </div>
+      </div>
+    {/if}
+
     <div class="p-form p-form--stacked">
       <div class="p-form__group row">
         <div class="col-4">
@@ -192,7 +222,7 @@
               id="obs"
               name="address-optional-stacked"
               autocomplete="address-line3"
-              bind:value={student.Observations}
+              bind:value={student.Observation}
             />
           </div>
         </div>
@@ -210,32 +240,6 @@
           </div>
         </div>
       </div>
-
-      <!-- <fieldset>
-        <label for="list-input-1">Endereço</label>
-        <input
-          placeholder="Rua"
-          id="list-input-1"
-          name="list-input-1"
-          type="text"
-          autocomplete="addr"
-        />
-        <label for="list-input-2">Número</label>
-        <input
-          placeholder="0"
-          id="list-input-2"
-          name="list-input-2"
-          type="text"
-          autocomplete="addr--n"
-        />
-        <label for="list-input-3">CEP</label>
-        <input
-          placeholder="13184-030"
-          id="list-input-3"
-          type="text"
-          autocomplete="cep"
-        />
-      </fieldset> -->
 
       <div class="row">
         <div class="col-small-1 col-medium-3 col-6 ">

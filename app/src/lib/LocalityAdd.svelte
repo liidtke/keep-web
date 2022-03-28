@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { isOpen, service, locality } from "$lib/store";
+  import { isOpen, service, locality, localities } from "$lib/store";
   import { onMount } from "svelte";
   import type { ILocality } from "./types";
 
@@ -35,10 +35,17 @@
     let res = await $service.saveLocality(currentLocality);
     if (res.isSuccess) {
       isOpen.set(false);
+      load();
     } else {
       result = res;
     }
   }
+
+  async function load(){
+    let all = await $service.getLocalities();
+    localities.set(all);
+  }
+
 </script>
 
 <div class="p-panel">

@@ -41,13 +41,14 @@
       </tr>
     </thead>
     <tbody>
-      {#each $students as student }
+      {#each $students as std }
+
       <tr>
-        <td>{student.Name ?? ''}</td>
-        <td>{student.Number}</td>
-        <td>{student.Registration ?? ''}</td>
+        <td>{std.Name ?? ''}</td>
+        <td>{std.Number}</td>
+        <td>{std.Registration ?? ''}</td>
         <!-- <td>{student.Admission ?? ''}</td> -->
-        <td>{student.Observations ?? ''}</td>
+        <td>{std.Observations ?? ''}</td>
         <td>
           <button
           class="u-toggle is-dense"
@@ -55,7 +56,7 @@
           aria-expanded="false"
           data-shown-text="Hide"
           data-hidden-text="Show"
-          on:click={() => navigate(student.Id)}>Detalhes</button
+          on:click={() => navigate(std.Id)}>Detalhes</button
           >
         </td>
       </tr>

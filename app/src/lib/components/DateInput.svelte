@@ -1,5 +1,5 @@
 <script lang="ts">
-import dateConverter from "$lib/date-converter";
+  import dateConverter from "$lib/date-converter";
 
   import IMask from "imask";
   import { onMount, onDestroy } from "svelte";
@@ -14,7 +14,7 @@ import dateConverter from "$lib/date-converter";
   $: {
       if(mask && mask.value != value){
           if(value){
-              mask.typedValue = value.toString(); //convert here
+              mask.typedValue = typeof(value) === 'string' ? value : dateConverter.convert(value);
           }
           else mask.typedValue = "";
       }
@@ -45,7 +45,7 @@ import dateConverter from "$lib/date-converter";
   });
 
   function changed(){
-      value = mask.value; //convert here
+      value = mask.value;
   }
 
 </script>

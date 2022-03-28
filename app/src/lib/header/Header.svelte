@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import logo from './svelte-logo.svg';
+	import logo from './keep-logo.svg';
 </script>
 
 <header id="navigation" class="p-navigation">
@@ -8,7 +8,7 @@
     <div class="p-navigation__banner">
       <div class="p-navigation__logo">
         <a class="p-navigation__item" sveltekit:prefetch href="/">
-          <img class="p-navigation__image" src="{logo}" alt="Canonical" width="80">
+          <img class="p-navigation__image" src="{logo}" alt="logo">
         </a>
       </div>
       <a href="#navigation" class="p-navigation__toggle--open" title="menu">Menu</a>

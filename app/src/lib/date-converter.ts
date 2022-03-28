@@ -21,12 +21,21 @@ export class DateConverter {
     }
 
     convert(value, customFormat = null){
+        if(typeof(value) === 'string'){
+            return value;
+        }
+
         let date = dayjs.utc(value).local();
         return date.format(customFormat || this.format);
     }
 
     parse(value:string){
-        return dayjs.utc(value).local();
+        let newDate = dayjs.utc(value, this.format).local();
+        if(newDate.isValid()){
+            return newDate.toISOString().replace('Z', '');
+        }
+
+        return value;
     }
 }
 

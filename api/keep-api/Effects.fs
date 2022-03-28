@@ -85,14 +85,17 @@ module Course =
         | ex -> fromException ex
 
 
-module Person =
-    let collectionName = "Person"
+module Student =
+    let collectionName = "Student"
     
-    let save (ctx: IMongoContext) (entity: Person) =
-        let db = ctx.Collection<Person>(collectionName)
+    let getLocality (ctx: IMongoContext) (entity: Student) =
+        true
+    
+    let save (ctx: IMongoContext) (entity: Student) =
+        let db = ctx.Collection<Student>(collectionName)
 
         let filter =
-            Builders.Filter.Eq((fun (x: Person) -> x.Id), entity.Id)
+            Builders.Filter.Eq((fun (x: Student) -> x.Id), entity.Id)
 
         try
             if entity.Id = Guid.Empty then

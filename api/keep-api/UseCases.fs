@@ -24,27 +24,53 @@ module Course =
         workflow
         <| Effects.Course.save db
 
-module Person =
-    let validatePerson =
-        let validateName (person:Person) =
-            if person.Name = String.Empty then
+module Student =
+    let checkOptions (student:Student) =
+        let radius =
+            if Object.ReferenceEquals(student.Radius, null) then {student with Radius = option.None} else student
+        radius
+        
+    let validateStudent (student:Student) =
+        let validateName =
+            if student.Name = String.Empty then
                 validation "Nome Inválido"
             else
-                succeed person
+                succeed student
 
-        let validateLocation person =
-            if person.LocalityId = Guid.Empty then
+        let validateLocality =
+            if student.LocalityId = Guid.Empty then
                 validation "Localidade Inválida"
             else
-                succeed person
+                succeed student
+        
+        let validateRegistration =
+            if isNullOrEmpty student.Registration then
+                validation "Matrícula inválida"
+            else succeed student
+        
+        let validateNumber =
+            if isNullOrEmpty student.Number then
+                validation "Número inválido"
+            else succeed student
 
-        validateName >> may validateLocation
+        validateName |> join validateLocality |> join validateRegistration |> join validateNumber
 
-    let validateLocation (effect: Person -> bool) (person: Person) =
-        if effect person then
-            succeed person
+    let locationExists (effect: Student -> bool) (student: Student) =
+        if effect student then
+            succeed student
         else
             validation "Localidade não encontrada"
+    let prepare (student: Student) =
+        { student with CreatedBy = "system"; CreationDate = DateTime.UtcNow } 
+            
+    let create db =
+        let workflow locationEffect saveEffect =
+            prepare
+            >> validateStudent
+            >> may (locationExists locationEffect)
+            >> may saveEffect
+            
+        workflow <| Effects.Student.getLocality db <| Effects.Student.save db
 
 module User =
     let validateUser (user: User) =

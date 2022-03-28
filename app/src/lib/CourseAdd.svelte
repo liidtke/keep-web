@@ -19,8 +19,8 @@
     let result = await $service.saveCourse(currentCourse);
     if(result.isSuccess){
       isOpen.set(false);
-      let all = await $service.getCourses();
-      courses.set(all);
+      load();
+      
     }
     else { 
       message = result.message ?? "Erro";
@@ -30,9 +30,14 @@
   function openChanged(value) {
     message = null;
     if(value === false){
-      currentCourse = {} as any;
+      currentCourse = {IsActive:true} as any;
     }
     
+  }
+
+  async function load(){
+    let all = await $service.getCourses();
+      courses.set(all);
   }
 
 </script>
@@ -83,7 +88,20 @@
 
         <div class="col-8">
           <div class="p-form__control">
-            <input type="text" id="number" name="Number" autocomplete="name" bind:value={currentCourse.Lessons} />
+            <input type="text" id="number" name="Number" bind:value={currentCourse.Lessons} />
+            <!-- todo number input -->
+          </div>
+        </div>
+      </div>
+
+      <div class="p-form__group row">
+        <div class="col-4">
+          <label for="chk" class="p-form__label" >Ativo</label>
+        </div>
+
+        <div class="col-8">
+          <div class="p-form__control">
+            <input type="checkbox" id="chk" name="chk" bind:checked={currentCourse.IsActive} />
             <!-- todo number input -->
           </div>
         </div>

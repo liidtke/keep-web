@@ -1,6 +1,7 @@
 import { Result } from '$lib/result'
 import { localities } from './store';
-import type { ICourse } from './types';
+import type { ICourse, IStudent } from './types';
+import dateConverter from "$lib/date-converter";
 
 export class Service {
 
@@ -17,49 +18,6 @@ export class Service {
       // 'Authorization': `bearer ${this.token}`
     }
   };
-
-
-  async getStudents() {
-    return [{
-      Id: "123",
-      Name: "Carlos Silva",
-      Number: "123",
-      Registration: "AFG-32",
-      Radius: null,
-      Cell: "012",
-      Pav: "12",
-      Xad: "001",
-      Referer: "A",
-      Observations: "",
-      Locality: null,
-      LocalityId: null,
-      AdmissionDate: Date,
-      CreationDate: Date,
-      CreatedBy: "Aldo"
-    },
-    {
-      Id: "123",
-      Name: "Felipe Nogueira",
-      Number: "4511",
-      Registration: "AFG-2311",
-      Radius: null,
-      Cell: "012",
-      Pav: "12",
-      Xad: "001",
-      Referer: "A",
-      Observations: "Criado agora a pouco",
-      Locality: null,
-      LocalityId: null,
-      AdmissionDate: Date,
-      CreationDate: Date,
-      CreatedBy: "Aldo"
-    }
-    ]
-  }
-
-  async saveStudent() {
-    return Result.Succeed();
-  }
 
   async getLocalities() {
     let request = await fetch(this.api + `localities`, {
@@ -155,6 +113,88 @@ export class Service {
       console.log(message);
       return Result.Error(message);
     }
+  }
+
+  async getStudents() {
+    let request = await fetch(this.api + `students`, {
+      headers: this.headers,
+    });
+    try {
+      let students = await request.json();
+      
+      return students;
+    }
+    catch {
+      return [];
+    }
+  }
+
+  async saveStudent(student:IStudent) {
+    let val = this.validateStudent(student);
+    if(val.isError){
+      return val;
+    }
+    
+    //setup
+    student.AdmissionDate = dateConverter.parse(student.AdmissionDate)
+    student.LocalityId = student.Locality.Id;
+    
+    let res: Response;
+
+    try {
+      console.log('trying', student)
+
+      if (student.Id) {
+        console.log('PUT')
+        res = await fetch(this.api + 'students', {
+          method: 'PUT',
+          body: JSON.stringify(student),
+          headers: this.headers,
+        });
+      }
+      else {
+        console.log('posting', this.api)
+        res = await fetch(this.api + 'students', {
+          method: 'POST',
+          headers: this.headers,
+          body: JSON.stringify(student)
+        })
+      }
+    }
+    catch (e) {
+      console.log(e);
+      return Result.Error("Não foi possível realizar a operação")
+    }
+
+    if (res.ok) {
+      let data = await res.json();
+      return Result.Ok(data);
+    }
+    else {
+      let message = await res.text();
+      console.log(message);
+      return Result.Error(message);
+    }
+  }
+
+  validateStudent(student:IStudent) {
+    if(student.Locality == null){
+      return Result.Error("Localidade Obrigatória");
+    }
+    if(student.Name == null){
+      return Result.Error("Nome Obrigatório")
+    }
+    if(student.Number == null){
+      return Result.Error("Número Obrigatório")
+    }
+    if(student.Registration == null){
+      return Result.Error("Matrícula Obrigatória")
+    }
+    if(student.AdmissionDate == null){
+      return Result.Error("Data de Admissão Obrigatória")
+    }
+
+    return Result.Succeed();
   }
 
 }

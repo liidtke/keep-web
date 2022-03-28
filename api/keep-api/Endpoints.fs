@@ -34,20 +34,24 @@ module User =
             (data |> Response.ofJson) ctx
         let handler = get "/users" (workflow)
 
-module Person =
+module Student =
+  module Get =
+      let workflow (ctx:HttpContext) =
+          (Queries.Student.getAll (getContext ctx) |> Response.ofJson) ctx
+          
+      let handler = get "/students" workflow
+      
   module Create =
-      let workflow (person:Person) (ctx: HttpContext)  =
-        let data = Queries.User.getAll (getContext ctx)
-        (data |> Response.ofJson) ctx
+      let workflow (student:Student) (ctx: HttpContext)  =
+        Output.from (Student.create <| getContext ctx <| student) ctx
         
       let jsonHandler : HttpHandler =
-        let handleOk (person:Person) : HttpHandler =
-            let message = sprintf "hello %s" person.Name
+        let handleOk (person:Student) : HttpHandler =
             workflow person
             
         Request.bindJson handleOk handleError
       
-      let handler = post "/person" (jsonHandler)
+      let handler = post "/students" (jsonHandler)
 
 module Locality =
   module Get =
@@ -92,7 +96,8 @@ let all = [ Home.handler
             Test.handler
             User.Create.handler
             User.Get.handler
-            Person.Create.handler
+            Student.Create.handler
+            Student.Get.handler
             Locality.Create.handler
             Locality.Create.handlerPut
             Locality.Get.handler

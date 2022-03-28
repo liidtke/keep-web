@@ -30,7 +30,7 @@ type User =
         member this.Id = this.Id
 
 [<CLIMutable>]
-type Person =
+type Student =
     { Id: Guid
       Name: string
       Number: string
@@ -43,7 +43,9 @@ type Person =
       Referer: string option
       AdmissionDate: DateTime
       CreationDate: DateTime
-      CreatedBy: string }
+      CreatedBy: string
+      Observation: string option
+      }
 
 [<CLIMutable>]
 type Course = {
@@ -60,13 +62,17 @@ type Progress = {
     Comments: string option
 }
 
-[<CLIMutable>]
-type Admission = {
-    Id: Guid
+type Registration = {
     Course: Course
-    StartDate: DateTime
+    Progress: Progress
     IsCompleted: bool
-    Progress: Progress list
+    StartDate: DateTime
+}
+
+[<CLIMutable>]
+type StudentProgress = {
+    Id: Guid
+    Registrations: Registration list
 }
 
 [<CLIMutable>]

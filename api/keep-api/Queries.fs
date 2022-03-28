@@ -34,16 +34,16 @@ module Locality =
     let getAll (ctx: IMongoContext) =
         let collection = ctx.Query<Locality>("Locality")
         toList collection
-        
-module Person =
+
+module Student =
     let getAll (ctx: IMongoContext) =
-        let collection = ctx.Query<Person>("Person")
+        let collection = ctx.Query<Student>("Student")
         collection
             .Take(50)
             .ToList()
     
     let filter (ctx: IMongoContext) (search:string) =
-        let collection = ctx.Query<Person>("Person")
+        let collection = ctx.Query<Student>("Student")
         let q = query {
             for p in collection do
             where (p.Name.Contains(search))

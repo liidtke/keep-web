@@ -16,7 +16,7 @@ export interface ILocality {
   Address2:string;
 }
 
-export interface IPerson {
+export interface IStudent {
   Id:string;
   Name:string;
   Number:string;
@@ -26,11 +26,11 @@ export interface IPerson {
   Pav:string;
   Xad:string;
   Referer:string;
-  Observations:string;
+  Observation:string;
   Locality?:ILocality
   LocalityId:string;
-  AdmissionDate:Date;
-  CreationDate:Date;
+  AdmissionDate:any;
+  CreationDate:any;
   CreatedBy?:string;
 }
 
