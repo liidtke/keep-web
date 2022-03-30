@@ -129,6 +129,20 @@ export class Service {
     }
   }
 
+  async getStudent(id) {
+    let request = await fetch(this.api + `students/${id}`, {
+      headers: this.headers,
+    });
+    try {
+      let student = await request.json();
+      
+      return student;
+    }
+    catch {
+      return null;
+    }
+  }
+
   async saveStudent(student:IStudent) {
     let val = this.validateStudent(student);
     if(val.isError){

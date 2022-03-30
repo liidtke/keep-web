@@ -23,3 +23,6 @@ let fromModel toModel serviceOutput =
    match serviceOutput with 
    | Success result -> result |> toModel |> Response.ofJson
    | Failure e -> errorHandler e
+   
+let badRequest text =
+   Response.withStatusCode 400 >> Response.ofPlainText text

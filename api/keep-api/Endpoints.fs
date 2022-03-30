@@ -36,10 +36,21 @@ module User =
 
 module Student =
   module Get =
-      let workflow (ctx:HttpContext) =
+      let allWorkflow (ctx:HttpContext) =
           (Queries.Student.getAll (getContext ctx) |> Response.ofJson) ctx
           
-      let handler = get "/students" workflow
+      let handler = get "/students" allWorkflow
+  module GetOne =
+      let workflow id (ctx:HttpContext) =
+          Response.ofJson (Queries.Student.getOne <| getContext ctx <| id ) ctx
+
+      let paramsHandler : HttpHandler =
+        let routeMap (route : RouteCollectionReader) =
+            let id = route.GetGuid "id" Guid.Empty
+            id
+        Request.mapRoute routeMap workflow
+          
+      let handler = get "/students/{id:Guid}" paramsHandler
       
   module Create =
       let workflow (student:Student) (ctx: HttpContext)  =
@@ -98,6 +109,7 @@ let all = [ Home.handler
             User.Get.handler
             Student.Create.handler
             Student.Get.handler
+            Student.GetOne.handler
             Locality.Create.handler
             Locality.Create.handlerPut
             Locality.Get.handler

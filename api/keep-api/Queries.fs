@@ -1,5 +1,6 @@
 module KeepApi.Queries
 
+open System
 open KeepApi.Domain
 open KeepApi.DataAccess
 open System.Linq
@@ -41,7 +42,17 @@ module Student =
         collection
             .Take(50)
             .ToList()
-    
+    let getOne (ctx: IMongoContext) (id:Guid) =
+         let collection = ctx.Query<Student>("Student")
+         collection |> Seq.tryFind (fun x -> x.Id = id)
+
+         //let result = collection.FirstOrDefault(fun x -> x.Id = id)
+         
+//         if result.Id = Guid.Empty then
+//            None
+//         else
+//            Some result
+         
     let filter (ctx: IMongoContext) (search:string) =
         let collection = ctx.Query<Student>("Student")
         let q = query {

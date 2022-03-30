@@ -103,3 +103,8 @@ let doubleMap successFunc failureFunc =
 let isNullOrEmpty str =
   String.IsNullOrEmpty(str)
   
+let parseGuid (str:string) =
+  try Some (Guid.Parse str)
+  with
+  | ex -> None
+  
