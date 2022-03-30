@@ -63,6 +63,7 @@ module Student =
         Request.bindJson handleOk handleError
       
       let handler = post "/students" (jsonHandler)
+      let putHandler = put "/students" (jsonHandler)
 
 module Locality =
   module Get =
@@ -108,6 +109,7 @@ let all = [ Home.handler
             User.Create.handler
             User.Get.handler
             Student.Create.handler
+            Student.Create.putHandler
             Student.Get.handler
             Student.GetOne.handler
             Locality.Create.handler

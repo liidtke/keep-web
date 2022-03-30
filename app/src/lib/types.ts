@@ -28,9 +28,9 @@ export interface IStudent {
   Referer:string;
   Observation:string;
   Locality?:ILocality
-  LocalityId:string;
-  AdmissionDate:any;
-  CreationDate:any;
+  LocalityId:any;
+  AdmissionDate:Date;
+  CreationDate:Date;
   CreatedBy?:string;
 }
 

@@ -2,13 +2,15 @@
   import { students, service } from "$lib/store";
   import { page } from "$app/stores";
   import { onMount } from "svelte";
-  import StudentView from "$lib/StudentView.svelte";
+  import StudentDetails from "$lib/StudentDetails.svelte";
   import StudentProgress from "$lib/StudentProgress.svelte";
   import type { IStudent } from "$lib/types";
 
   let id: string = $page.params.id;
   let student: IStudent;
-  let notFound:boolean = false;
+  let notFound: boolean = false;
+  let isLoading: boolean = true;
+  let message = null;
 
   onMount(async () => {
     await getStudent();
@@ -16,31 +18,51 @@
 
   async function getStudent() {
     if (!id) {
-      console.log('return');
+      console.log("return");
       return;
     }
 
-    console.log('check');
+    console.log("check");
 
     if ($students && $students.length) {
       let index = $students.indexOf((x) => x.Id == id);
       if (index > -1) {
-        console.log('found');
+        console.log("found");
         student = $students[index];
       }
     }
 
-    if(!student){
-      loadFromServer();
+    if (!student) {
+      await loadFromServer();
     }
+
+    isLoading = false;
   }
 
   async function loadFromServer() {
+    isLoading = true;
     student = await $service.getStudent(id);
-    if(!student){
+    if (!student) {
       notFound = true;
     }
+    isLoading = false;
   }
+
+  async function save(){
+    message = null;
+
+    let result = await $service.saveStudent(student);
+    if(result.isError){
+      message = result.message;
+    }
+  
+  }
+
+  function cancel(){
+    message = null;
+    loadFromServer();
+  }
+
 </script>
 
 <div class="p-strip">
@@ -51,20 +73,38 @@
     <hr />
 
     <div class="row">
+      {#if message}
       <div class="col-12">
-        <StudentView bind:student />
-        cancelar salvar aqui
+      <div class="p-notification--caution">
+        <div class="p-notification__content">
+          <h5 class="p-notification__title">Erro ao Salvar</h5>
+            <p class="p-notification__message">{message}</p>
+        </div>
+      </div>
+      </div>
+    {/if}
+      <div class="col-12">
+        <StudentDetails bind:student />
+        <div class="row">
+          <div class="col-6 ">
+            <button class="p-button" on:click={cancel}>Cancelar</button>
+            <button class="p-button--positive" on:click={save}>Salvar</button>
+          </div>
+        </div>
       </div>
       <div class="col-12">
         <StudentProgress bind:id={student.Id} />
       </div>
     </div>
-  {:else}
+  {:else if isLoading}
     <div class="loader" />
+  {:else}
     <div class="p-notification--caution">
       <div class="p-notification__content">
         <h5 class="p-notification__title">Não Encontrado</h5>
-          <p class="p-notification__message">Não foi possível encontrar o aluno</p>
+        <p class="p-notification__message">
+          Não foi possível encontrar o aluno
+        </p>
       </div>
     </div>
   {/if}

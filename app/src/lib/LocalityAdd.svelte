@@ -42,8 +42,7 @@
   }
 
   async function load(){
-    let all = await $service.getLocalities();
-    localities.set(all);
+    await $service.loadLocalities();
   }
 
 </script>

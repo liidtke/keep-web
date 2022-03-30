@@ -23,6 +23,10 @@
     if(result.isError){
       message = result.message;
     }
+    else{
+      isOpen.set(false);
+      getAll();
+    }
   }
 
   function cancel(){
@@ -112,7 +116,7 @@
 
         <div class="col-8">
           <div class="p-form__control">
-            <LocalitySelect bind:selected={student.Locality}></LocalitySelect>
+            <LocalitySelect bind:student={student}></LocalitySelect>
             <p class="p-form-help-text" id="exampleHelpTextMessage">Presídio - Caso não exista adicione um novo</p>
           </div>
         </div>
@@ -236,7 +240,6 @@
         <div class="col-8">
           <div class="p-form__control">
             <DateInput bind:value={student.AdmissionDate} today={true}/>
-             
           </div>
         </div>
       </div>

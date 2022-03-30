@@ -9,6 +9,7 @@ export class Service {
   private headers: any;
   private token: any;
 
+
   constructor() {
 
     this.api = "http://localhost:5000/"
@@ -19,7 +20,7 @@ export class Service {
     }
   };
 
-  async getLocalities() {
+  private async getLocalities() {
     let request = await fetch(this.api + `localities`, {
       headers: this.headers,
     });
@@ -149,10 +150,6 @@ export class Service {
       return val;
     }
     
-    //setup
-    student.AdmissionDate = dateConverter.parse(student.AdmissionDate)
-    student.LocalityId = student.Locality.Id;
-    
     let res: Response;
 
     try {
@@ -209,6 +206,22 @@ export class Service {
     }
 
     return Result.Succeed();
+  }
+
+  private locLoaded:boolean = false;
+  private locPromise:any;
+
+  async loadLocalities(){
+    if(this.locPromise){
+      await this.locPromise;
+    }
+
+    if(!this.locLoaded){
+      this.locPromise = await this.getLocalities();
+      let locs = await this.locPromise;
+      localities.set(locs);
+      this.locLoaded = true;
+    }
   }
 
 }

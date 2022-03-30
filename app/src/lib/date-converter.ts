@@ -7,7 +7,7 @@ import timezone from 'dayjs/plugin/timezone.js';
 
 export class DateConverter {
 
-    private format: string = 'L LTS';
+    private format: string = 'L';
     locale: 'pt';
     tzone:'America/Sao_Paulo'
     
@@ -21,21 +21,25 @@ export class DateConverter {
     }
 
     convert(value, customFormat = null){
+        console.log('converting value', value)
         if(typeof(value) === 'string'){
-            return value;
+            console.log('value is string')
         }
 
-        let date = dayjs.utc(value).local();
-        return date.format(customFormat || this.format);
+        let date = dayjs(value).utc().local();
+        //console.log(date, value)
+        let str = date.format(customFormat || this.format);
+        //console.log(str);
+        return str;
     }
 
     parse(value:string){
+        console.log('parsing value', value)
         let newDate = dayjs.utc(value, this.format).local();
         if(newDate.isValid()){
             return newDate.toISOString().replace('Z', '');
         }
-
-        return value;
+        else return false
     }
 }
 

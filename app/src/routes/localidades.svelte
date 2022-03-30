@@ -11,8 +11,8 @@
 
   async function load() {
     if ($localities == null || $localities.length == 0) {
-      let result = await $service.getLocalities();
-      localities.set(result);
+      await $service.loadLocalities();
+      
     }
 
     //console.log($localities);

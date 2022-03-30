@@ -13,7 +13,7 @@
 
 </script>
 
-<select name="localitySelect" id="localitySelect" bind:value={selected}>
+<select name="select" id="select" bind:value={selected}>
   <option value="">Selecione uma Localidade</option>
   {#each $courses as course}
 			<option value={course}>

@@ -1,53 +1,80 @@
 <script lang="ts">
-  import dateConverter from "$lib/date-converter";
+    import dateConverter from "$lib/date-converter";
 
-  import IMask from "imask";
-  import { onMount, onDestroy } from "svelte";
+    import IMask from "imask";
+    import { onMount, onDestroy } from "svelte";
 
-  export let value;
-  export let inputclass = "input";
-  export let today:boolean = false;
-  export let id = "date_input";
-  let mask;
-  let element;
+    export let value; //external value (dateTime)
+    export let inputclass = "input";
+    export let today: boolean = false;
+    export let id = "date_input";
 
-  $: {
-      if(mask && mask.value != value){
-          if(value){
-              mask.typedValue = typeof(value) === 'string' ? value : dateConverter.convert(value);
-          }
-          else mask.typedValue = "";
-      }
-  }
+    let internalChange = false;
+    let mask;
+    let element;
 
-  onMount(async () => {
-      if(today){
-          let date = Date.now();
-          value = dateConverter.convert(date);
-      }
+    $: {
+        valueChanged(value);
+    }
 
-      var maskOptions = {
-          mask: "00/00/0000", //TODO format
-      };
+    onMount(async () => {
+        if (today) {
+            let date = Date.now();
+            value = dateConverter.convert(date);
+        }
 
-      mask = IMask(element, maskOptions);
-      if(value !== null && value !== undefined){
-          mask.typedValue = value.toString();
-      }
-      mask.on("accept", changed);
-  });
+        var maskOptions = {
+            mask: "00/00/0000", //TODO format
+        };
 
-  onDestroy(async () => {
-      if(mask){
-          mask.destroy();
+        mask = IMask(element, maskOptions);
+        if (value !== null && value !== undefined) {
+            valueChanged(value);
+        }
+        mask.on("accept", changed);
+    });
 
-      }
-  });
+    onDestroy(async () => {
+        if (mask) {
+            mask.destroy();
+        }
+    });
 
-  function changed(){
-      value = mask.value;
-  }
+    function valueChanged(value) {
+        if (internalChange) {
+            internalChange = false;
+            return;
+        }
 
+        console.log('value changed');
+
+        if (mask && mask.value != value) {
+            if (value) {
+                mask.typedValue = dateConverter.convert(value);
+            } else mask.typedValue = "";
+        }
+    }
+
+    function changed(event) {
+        //console.log("changed", event.target.value);
+        if(!event.target.value){
+           return;
+        }
+        internalChange = true;
+        let result = dateConverter.parse(event.target.value);
+        if (result) {
+          //  console.log('setting result')
+            value = result;
+        }
+        else{
+            //console.log('invalid value')
+        }
+    }
 </script>
 
-<input id={id} bind:this={element} class={inputclass} type="text"/>
+<input
+    {id}
+    bind:this={element}
+    class={inputclass}
+    type="text"
+/>
