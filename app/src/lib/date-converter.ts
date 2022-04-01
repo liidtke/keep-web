@@ -20,10 +20,14 @@ export class DateConverter {
         dayjs.locale(pt);
     }
 
-    convert(value, customFormat = null){
-        console.log('converting value', value)
+    toString(value, customFormat = null){
+        //console.log('converting value', value)
+        if(!value){
+            return ''
+        }
+
         if(typeof(value) === 'string'){
-            console.log('value is string')
+            //console.log('value is string')
         }
 
         let date = dayjs(value).utc().local();
@@ -34,7 +38,7 @@ export class DateConverter {
     }
 
     parse(value:string){
-        console.log('parsing value', value)
+        //console.log('parsing value', value)
         let newDate = dayjs.utc(value, this.format).local();
         if(newDate.isValid()){
             return newDate.toISOString().replace('Z', '');

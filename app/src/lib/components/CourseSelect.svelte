@@ -14,7 +14,7 @@
 </script>
 
 <select name="select" id="select" bind:value={selected}>
-  <option value="">Selecione uma Localidade</option>
+  <option value="">Selecione um Curso</option>
   {#each $courses as course}
 			<option value={course}>
 				{course.Name}

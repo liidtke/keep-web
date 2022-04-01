@@ -40,3 +40,24 @@ export interface ICourse {
     Lessons:number,
     IsActive:boolean,
 }
+
+export interface IProgress {
+  Lessons: number[];
+  Sent: Date;
+  Returned?: Date;
+  Comments?: string;
+  _edit?:boolean;
+}
+
+export interface IRegistration{
+  Course:ICourse;
+  Progress:IProgress[];
+  IsCompleted:boolean;
+  StartDate:Date;
+}
+
+export interface IStudentCourses{
+  Id:string
+  StudentId:string
+  Registrations:IRegistration[]
+}

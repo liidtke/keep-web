@@ -189,7 +189,7 @@ export class Service {
   }
 
   validateStudent(student:IStudent) {
-    if(student.Locality == null){
+    if(!student.LocalityId){
       return Result.Error("Localidade Obrigatória");
     }
     if(student.Name == null){
@@ -211,12 +211,12 @@ export class Service {
   private locLoaded:boolean = false;
   private locPromise:any;
 
-  async loadLocalities(){
+  async loadLocalities(reload = false){
     if(this.locPromise){
       await this.locPromise;
     }
 
-    if(!this.locLoaded){
+    if(!this.locLoaded || reload){
       this.locPromise = await this.getLocalities();
       let locs = await this.locPromise;
       localities.set(locs);

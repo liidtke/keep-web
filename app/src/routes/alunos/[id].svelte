@@ -1,6 +1,7 @@
 <script lang="ts">
   import { students, service } from "$lib/store";
   import { page } from "$app/stores";
+  import { goto } from "$app/navigation";
   import { onMount } from "svelte";
   import StudentDetails from "$lib/StudentDetails.svelte";
   import StudentProgress from "$lib/StudentProgress.svelte";
@@ -48,21 +49,23 @@
     isLoading = false;
   }
 
-  async function save(){
+  async function save() {
     message = null;
 
     let result = await $service.saveStudent(student);
-    if(result.isError){
+    if (result.isError) {
       message = result.message;
     }
-  
   }
 
-  function cancel(){
+  function cancel() {
     message = null;
     loadFromServer();
   }
 
+  function back() {
+    goto("/alunos/");
+  }
 </script>
 
 <div class="p-strip">
@@ -74,24 +77,27 @@
 
     <div class="row">
       {#if message}
-      <div class="col-12">
-      <div class="p-notification--caution">
-        <div class="p-notification__content">
-          <h5 class="p-notification__title">Erro ao Salvar</h5>
-            <p class="p-notification__message">{message}</p>
+        <div class="col-12">
+          <div class="p-notification--caution">
+            <div class="p-notification__content">
+              <h5 class="p-notification__title">Erro ao Salvar</h5>
+              <p class="p-notification__message">{message}</p>
+            </div>
+          </div>
         </div>
-      </div>
-      </div>
-    {/if}
+      {/if}
+
       <div class="col-12">
         <StudentDetails bind:student />
         <div class="row">
           <div class="col-6 ">
+            <button class="p-button--base" on:click={back}>Voltar</button>
             <button class="p-button" on:click={cancel}>Cancelar</button>
             <button class="p-button--positive" on:click={save}>Salvar</button>
           </div>
         </div>
       </div>
+      <hr />
       <div class="col-12">
         <StudentProgress bind:id={student.Id} />
       </div>

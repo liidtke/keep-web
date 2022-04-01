@@ -56,7 +56,7 @@ type Course = {
 }
 
 type Progress = {
-    LessonNumbers: int32 list
+    Lessons: int32 list
     Sent: DateTime
     Returned: DateTime option
     Comments: string option
@@ -64,14 +64,15 @@ type Progress = {
 
 type Registration = {
     Course: Course
-    Progress: Progress
+    Progress: Progress list
     IsCompleted: bool
     StartDate: DateTime
 }
 
 [<CLIMutable>]
-type StudentProgress = {
+type StudentCourses = {
     Id: Guid
+    StudentId:Guid
     Registrations: Registration list
 }
 

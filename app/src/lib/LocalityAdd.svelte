@@ -42,7 +42,7 @@
   }
 
   async function load(){
-    await $service.loadLocalities();
+    await $service.loadLocalities(true);
   }
 
 </script>

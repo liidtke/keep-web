@@ -20,7 +20,7 @@
     onMount(async () => {
         if (today) {
             let date = Date.now();
-            value = dateConverter.convert(date);
+            value = dateConverter.toString(date);
         }
 
         var maskOptions = {
@@ -46,18 +46,18 @@
             return;
         }
 
-        console.log('value changed');
+        //console.log('value changed');
 
         if (mask && mask.value != value) {
             if (value) {
-                mask.typedValue = dateConverter.convert(value);
+                mask.typedValue = dateConverter.toString(value);
             } else mask.typedValue = "";
         }
     }
 
     function changed(event) {
         //console.log("changed", event.target.value);
-        if(!event.target.value){
+        if(!event || !event.target.value){
            return;
         }
         internalChange = true;
