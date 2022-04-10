@@ -99,7 +99,7 @@
       </div>
       <hr />
       <div class="col-12">
-        <StudentProgress bind:id={student.Id} />
+        <StudentProgress bind:studentId={student.Id} />
       </div>
     </div>
   {:else if isLoading}

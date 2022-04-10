@@ -19,8 +19,8 @@
 
     onMount(async () => {
         if (today) {
-            let date = Date.now();
-            value = dateConverter.toString(date);
+            let date = dateConverter.now();
+            value = date;
         }
 
         var maskOptions = {

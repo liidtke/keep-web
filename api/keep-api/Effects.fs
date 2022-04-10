@@ -8,6 +8,11 @@ open MongoDB.Driver
 open Microsoft.FSharp.Linq
 open System.Linq
 
+
+let output id (result:DeleteResult) =
+    if result.DeletedCount > 0 then succeed id
+        else validation "Erro ao deletar item"
+
 module User =
     let collectionName = "User"
 
@@ -107,6 +112,33 @@ module Student =
         with
         | ex -> fromException ex
 
+module Registration =
+    let collectionName = "Registration"
+    
+    let save (ctx: IMongoContext) (entity:Registration ) =
+        let db = ctx.Collection<Registration>(collectionName)
+
+        let filter =
+            Builders.Filter.Eq((fun (x: Registration) -> x.Id), entity.Id)
+
+        try
+            if entity.Id = Guid.Empty then
+                db.InsertOne(entity)
+                succeed entity
+            else
+                db.ReplaceOne(filter, entity) |> ignore
+                succeed entity
+        with
+        | ex -> fromException ex
+        
+    let delete (ctx: IMongoContext) id =
+        let db = ctx.Collection<Registration>(collectionName)
+        let filter =
+            Builders.Filter.Eq((fun (x: Registration) -> x.Id), id)
+        
+        db.DeleteOne(filter) |> output id
+        
+       
 //testing postgres
 //module Person =
 //    open Dapper.FSharp

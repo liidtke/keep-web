@@ -62,3 +62,7 @@ module Student =
             take 50
         }
         toList q
+        
+    let registrations (ctx: IMongoContext) studentId =
+        let collection = ctx.Query<Registration>("Registration")
+        collection |> Seq.filter (fun x -> x.StudentId = studentId)

@@ -4,36 +4,34 @@
   import dateConverter from "$lib/date-converter";
   import Numbers from "$lib/components/Numbers.svelte";
 
-  import type { IRegistration, IStudentCourses, IProgress } from "./types";
+  import type { IRegistration, IProgress } from "./types";
+  import { service } from "./store";
 
-  export let id;
+  export let studentId;
 
   let isAddingRegistration: boolean = false;
-  let newRegistration: IRegistration;
 
-  let stc: IStudentCourses;
+  let registrations: IRegistration[] = [];
+  let newRegistration: IRegistration;
+  let message: string;
 
   $: {
-    load(id);
+    load(studentId);
   }
 
-  $: canSaveCourses = stc && stc.Registrations && stc.Registrations.length;
-
-  function load(id) {
-    //todo load
-    stc = {
-      Registrations: [],
-      StudentId: id,
-    } as any;
+  async function load(id) {
+    registrations = await $service.getRegistrations(id);
   }
 
   function cancelAddRegistration() {
+    isAddingRegistration = false;
     newRegistration = null;
   }
 
   function addRegistration() {
     isAddingRegistration = true;
     newRegistration = {
+      StudentId: studentId,
       Course: null,
       Progress: [],
       IsCompleted: false,
@@ -47,10 +45,10 @@
       newRegistration.Course &&
       newRegistration.StartDate
     ) {
-      stc.Registrations.unshift(newRegistration);
+      registrations.unshift(newRegistration);
       newRegistration = {} as any;
       isAddingRegistration = false;
-      stc = stc;
+      registrations = registrations;
     }
   }
 
@@ -66,13 +64,47 @@
     };
 
     reg.Progress.push(newProgress);
-    stc = stc;
+    registrations = registrations;
   }
 
-  function cancelCourses() {}
+  function cancelRegistration(registration) {
+    load(studentId);
+  }
 
-  function saveCourses() {
-    console.log(stc);
+  async function removeRegistration(registration) {
+    let response = await $service.deleteRegistration(registration);
+
+    if (response.isSuccess) {
+      load(studentId);
+    } else {
+      message = response.message ?? "Erro ao realizar ação";
+    }
+  }
+
+  async function saveRegistration(registration) {
+    registration = prepareSaveRegistration(registration);
+    message = null;
+    console.log(registration);
+
+    let response = await $service.saveRegistration(registration);
+
+    if (response.isSuccess) {
+      load(studentId);
+    } else {
+      message = response.message;
+    }
+  }
+
+  function prepareSaveRegistration(registration: IRegistration) {
+    registration.Progress.forEach((p) => {
+      p.Lessons = p.Lessons.filter((x) => !Number.isNaN(x));
+
+      if (p.Lessons.some((l) => l == registration.Course.Lessons)) {
+        registration.IsCompleted = true;
+      }
+    });
+
+    return registration;
   }
 </script>
 
@@ -100,13 +132,24 @@
         >Cancelar
       </button>
       <button class="p-button--positive" on:click={confirmRegistration}
-        >Adicionar
+        >Salvar
       </button>
     </div>
   </div>
 {/if}
 
-{#each stc.Registrations as registration}
+{#if message}
+  <div class="p-notification--caution">
+    <div class="p-notification__content">
+      <h5 class="p-notification__title">Erro ao salvar</h5>
+      <p class="p-notification__message">
+        {message}
+      </p>
+    </div>
+  </div>
+{/if}
+
+{#each registrations as registration}
   <div class="row">
     <div class="col-3">
       <h4>{registration.Course.Name}</h4>
@@ -131,7 +174,7 @@
               <th>Enviado</th>
               <th>Recebido</th>
               <th>Observações</th>
-              <th></th>
+              <th />
             </tr>
           </thead>
           <tbody>
@@ -150,7 +193,14 @@
                     {dateConverter.toString(progress.Returned)}
                   </td>
                   <td>
-                    <!-- todo actions -->
+                    <button
+                      class="u-toggle is-dense"
+                      aria-controls="expanded-row"
+                      aria-expanded="false"
+                      data-shown-text="Hide"
+                      data-hidden-text="Show"
+                      on:click={() => (progress._edit = true)}>Editar</button
+                    >
                   </td>
                 </tr>
               {:else}
@@ -167,9 +217,7 @@
                   <td>
                     <input type="text" bind:value={progress.Comments} />
                   </td>
-                  <td>
-                    
-                  </td>
+                  <td />
                 </tr>
               {/if}
             {/each}
@@ -186,21 +234,24 @@
       >
     </div>
   </div>
-{/each}
 
-{#if canSaveCourses}
   <div class="row">
     <div class="col-6">
-      <button class="p-button" on:click={cancelCourses}>Cancelar </button>
-      <button class="p-button--positive" on:click={saveCourses}>Salvar </button>
+      {#if registration.Id}
+        <button class="p-button--negative" on:click={() => removeRegistration(registration)}
+          >Excluir
+        </button>
+      {/if}
+      <button class="p-button" on:click={cancelRegistration}>Cancelar </button>
+      <button
+        class="p-button--positive"
+        on:click={() => saveRegistration(registration)}
+        >Salvar
+      </button>
     </div>
   </div>
-{/if}
+{/each}
 
-<!-- <div class="row">
-  <h3>Finalizados</h3>
-  <p>Nenhum</p>
-</div> -->
 <style>
   .lessons {
     max-height: 26vh;
@@ -209,5 +260,4 @@
     border: 1px solid #b1b0b0;
     margin-bottom: 1rem;
   }
-
 </style>

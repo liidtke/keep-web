@@ -45,6 +45,10 @@ export class DateConverter {
         }
         else return false
     }
+
+    now(){
+        return dayjs().toISOString();
+    }
 }
 
 const dateConverter = new DateConverter();

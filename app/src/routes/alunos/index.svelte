@@ -48,7 +48,7 @@
         <td>{std.Number}</td>
         <td>{std.Registration ?? ''}</td>
         <!-- <td>{student.Admission ?? ''}</td> -->
-        <td>{std.Observations ?? ''}</td>
+        <td>{std.Observation ?? ''}</td>
         <td>
           <button
           class="u-toggle is-dense"
@@ -63,12 +63,5 @@
       {/each}
      
     </tbody>
-    <!-- <tfoot>
-      <tr>
-        <th>One-time price</th>
-        <td>$75,000</td>
-        <td>$150,000</td>
-      </tr>
-    </tfoot> -->
   </table>
 </div>

@@ -1,6 +1,7 @@
 module KeepApi.Domain
 
 open System
+open System.Collections.Generic
 
 type Id = Guid
 type Number = int32
@@ -56,24 +57,20 @@ type Course = {
 }
 
 type Progress = {
-    Lessons: int32 list
+    Lessons: List<int32>
     Sent: DateTime
     Returned: DateTime option
     Comments: string option
 }
 
-type Registration = {
-    Course: Course
-    Progress: Progress list
-    IsCompleted: bool
-    StartDate: DateTime
-}
-
 [<CLIMutable>]
-type StudentCourses = {
+type Registration = {
     Id: Guid
     StudentId:Guid
-    Registrations: Registration list
+    Course: Course
+    Progress: List<Progress>
+    IsCompleted: bool
+    StartDate: DateTime
 }
 
 [<CLIMutable>]

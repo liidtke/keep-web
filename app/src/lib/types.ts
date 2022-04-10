@@ -50,14 +50,10 @@ export interface IProgress {
 }
 
 export interface IRegistration{
+  StudentId:string
   Course:ICourse;
   Progress:IProgress[];
   IsCompleted:boolean;
   StartDate:Date;
-}
-
-export interface IStudentCourses{
-  Id:string
-  StudentId:string
-  Registrations:IRegistration[]
+  Id?:string
 }

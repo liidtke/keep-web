@@ -1,6 +1,6 @@
 import { Result } from '$lib/result'
 import { localities } from './store';
-import type { ICourse, IStudent } from './types';
+import type { ICourse, IRegistration, IStudent } from './types';
 import dateConverter from "$lib/date-converter";
 
 export class Service {
@@ -156,7 +156,7 @@ export class Service {
       console.log('trying', student)
 
       if (student.Id) {
-        console.log('PUT')
+        
         res = await fetch(this.api + 'students', {
           method: 'PUT',
           body: JSON.stringify(student),
@@ -206,6 +206,91 @@ export class Service {
     }
 
     return Result.Succeed();
+  }
+
+
+  async saveRegistration(registration:IRegistration) {
+    
+    if(!registration.StudentId){
+      return Result.Error("Aluno não encontrado")
+    }
+    
+    let res: Response;
+
+    try {
+      console.log('trying', registration)
+      let url = `${this.api}students/${registration.StudentId}/registrations`;
+
+      if (registration.Id) {
+        res = await fetch(url, {
+          method: 'PUT',
+          body: JSON.stringify(registration),
+          headers: this.headers,
+        });
+      }
+      else {
+        res = await fetch(url, {
+          method: 'POST',
+          headers: this.headers,
+          body: JSON.stringify(registration)
+        })
+      }
+    }
+    catch (e) {
+      console.log(e);
+      return Result.Error("Não foi possível realizar a operação")
+    }
+
+    if (res.ok) {
+      let data = await res.json();
+      return Result.Ok(data);
+    }
+    else {
+      let message = await res.text();
+      console.log(message);
+      return Result.Error(message);
+    }
+  }
+
+  async deleteRegistration(registration){
+    let res: Response;
+
+    try{
+      let url = `${this.api}students/${registration.StudentId}/registrations/${registration.Id}`;
+      res = await fetch(url, {
+        method: 'DELETE',
+        headers: this.headers,
+      });
+    }
+    catch (e) {
+      console.log(e);
+      return Result.Error("Não foi possível realizar a operação")
+    }
+
+    if (res.ok) {
+      let data = await res.json();
+      return Result.Ok(data);
+    }
+    else {
+      let message = await res.text();
+      console.log(message);
+      return Result.Error(message);
+    }
+  }
+
+  async getRegistrations(studentId:string){
+    let url = `${this.api}students/${studentId}/registrations`;
+    let request = await fetch(url, {
+      headers: this.headers,
+    });
+    try {
+      let items = await request.json();
+      
+      return items;
+    }
+    catch {
+      return [];
+    }
   }
 
   private locLoaded:boolean = false;

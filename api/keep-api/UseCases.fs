@@ -1,6 +1,7 @@
 module KeepApi.UseCases
 
 open Domain
+open KeepApi.Domain
 open SharedKernel
 open System
 
@@ -149,3 +150,26 @@ module Locality =
         let workflow saveEffect = validateLocality >> may saveEffect
 
         workflow <| Effects.Locality.save db
+
+module Registration =
+    let validate (reg:Registration) =
+        let validateStudent =
+            if reg.StudentId = Guid.Empty then validation "Id inválido"
+            else succeed reg
+        
+        let validateCourse  =
+            if reg.Course.Id = Guid.Empty || reg.Course.Name = "" then validation "Curso Inválido"
+            else succeed reg
+        
+//        let validateRegs =
+//            courses.Registrations
+//            |> List.map vRegCourse
+//            |> List.fold (fun acc elem -> join acc elem) (succeed courses)
+        
+        validateStudent |> join validateCourse
+    
+    let create db =
+        let workflow saveEffect = validate >> may saveEffect
+        workflow <| Effects.Registration.save db
+        
+    let delete db = Effects.Registration.delete db
