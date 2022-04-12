@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { students, service } from "$lib/store";
+  import { students, service, snackMessage, showMessage } from "$lib/store";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
@@ -56,6 +56,10 @@
     if (result.isError) {
       message = result.message;
     }
+    else{
+      snackMessage.set("Salvo com Sucesso");
+      showMessage.set(true);
+    }
   }
 
   function cancel() {
@@ -67,6 +71,10 @@
     goto("/alunos/");
   }
 </script>
+
+<svelte:head>
+	<title>Detalhes do Aluno</title>
+</svelte:head>
 
 <div class="p-strip">
   <h1>Detalhes do Aluno</h1>

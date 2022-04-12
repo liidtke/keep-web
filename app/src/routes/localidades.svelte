@@ -24,6 +24,11 @@
   }
 </script>
 
+
+<svelte:head>
+	<title>Localidades</title>
+</svelte:head>
+
 <div class="p-strip">
   <h1>Localidades</h1>
   <hr />

@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-	<title>Home</title>
+	<title>Início</title>
 </svelte:head>
 
 <div class="p-strip back">
@@ -20,11 +20,12 @@
 				</p>
 				<h3>Funcionalidades Propostas</h3>
 				<ul class="p-list">
-					<li class="p-list__item is-crossed">Cadastro de Alunos</li>
-					<li class="p-list__item is-crossed">Cadastro de Cursos</li>
-					<li class="p-list__item is-crossed">Progresso dos Estudos dos Alunos</li>
-					<li class="p-list__item is-crossed">Cadastro de Localidades</li>
-					<li class="p-list__item is-crossed">Modelo de Carta</li>
+					<li class="p-list__item is-ticked">Cadastro de Alunos</li>
+					<li class="p-list__item is-ticked">Cadastro de Cursos</li>
+					<li class="p-list__item is-ticked">Progresso dos Estudos dos Alunos</li>
+					<li class="p-list__item is-crossed">Cadastro de Perguntas</li>
+					<li class="p-list__item is-ticked">Cadastro de Localidades</li>
+					<li class="p-list__item is-crossed">Modelos de Carta</li>
 				</ul>
 				<p>
 					Para mais informações entre em contato com <a href="mailto:aldo.liidtke@gmail.com"

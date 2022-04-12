@@ -5,7 +5,7 @@
   import Numbers from "$lib/components/Numbers.svelte";
 
   import type { IRegistration, IProgress } from "./types";
-  import { service } from "./store";
+  import { service, snackMessage, showMessage } from "./store";
 
   export let studentId;
 
@@ -89,6 +89,8 @@
     let response = await $service.saveRegistration(registration);
 
     if (response.isSuccess) {
+      snackMessage.set("Curso Salvo");
+      showMessage.set(true);
       load(studentId);
     } else {
       message = response.message;
@@ -97,15 +99,21 @@
 
   function prepareSaveRegistration(registration: IRegistration) {
     registration.Progress.forEach((p) => {
-      p.Lessons = p.Lessons.filter((x) => !Number.isNaN(x));
+      p.Lessons = p.Lessons.filter((x) => Number.isInteger(x));
 
       if (p.Lessons.some((l) => l == registration.Course.Lessons)) {
         registration.IsCompleted = true;
       }
     });
-
+    
     return registration;
   }
+
+  function removeLesson(registration, index){
+    registration.Progress.splice(index, 1);
+    registrations = registrations;
+  }
+
 </script>
 
 <h2>Cursos</h2>
@@ -132,7 +140,7 @@
         >Cancelar
       </button>
       <button class="p-button--positive" on:click={confirmRegistration}
-        >Salvar
+        >Adicionar
       </button>
     </div>
   </div>
@@ -178,12 +186,12 @@
             </tr>
           </thead>
           <tbody>
-            {#each registration.Progress as progress}
+            {#each registration.Progress as progress, index}
               {#if !progress._edit}
                 <tr>
                   <td>
                     {#each progress.Lessons as number}
-                      <span>{number}</span>
+                      <span>{number} </span>
                     {/each}
                   </td>
                   <td>
@@ -191,6 +199,9 @@
                   </td>
                   <td>
                     {dateConverter.toString(progress.Returned)}
+                  </td>
+                  <td>
+                    {progress.Comments ?? ""}
                   </td>
                   <td>
                     <button
@@ -212,12 +223,19 @@
                     <DateInput bind:value={progress.Sent} today={true} />
                   </td>
                   <td>
-                    <DateInput bind:value={progress.Sent} />
+                    <DateInput bind:value={progress.Returned} />
                   </td>
                   <td>
                     <input type="text" bind:value={progress.Comments} />
                   </td>
-                  <td />
+                  <td>
+                    <button
+                      class="p-button--negative is-dense"
+                      aria-controls="expanded-row"
+                      aria-expanded="false"
+                      on:click={() => removeLesson(registration, index)}>Remover</button
+                    >
+                  </td>
                 </tr>
               {/if}
             {/each}

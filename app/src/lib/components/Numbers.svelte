@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Nip from "$lib/components/Nip.svelte";
   export let numbers:any[] = [];
 
   $: {
@@ -16,14 +17,9 @@
 </script>
 
 {#each numbers as number}
- <input class="mini" type="text" bind:value={number}>
+ <!-- <input class="mini" type="text" bind:value={number}> -->
+ <Nip bind:value={number} inputclass="mini"></Nip>
 {/each}
 
-<style>
-  .mini{
-    width: 40px;
-   min-width: 1em;
-  }
-</style>
 
 

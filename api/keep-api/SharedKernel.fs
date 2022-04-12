@@ -107,4 +107,3 @@ let parseGuid (str:string) =
   try Some (Guid.Parse str)
   with
   | ex -> None
-  

@@ -20,6 +20,10 @@
 
 </script>
 
+<svelte:head>
+	<title>Alunos</title>
+</svelte:head>
+
 <div class="p-strip">
   <h1>Alunos</h1>
   <hr />

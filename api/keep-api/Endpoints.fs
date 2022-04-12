@@ -21,19 +21,15 @@ module Home =
     let handler =
         get "/" (Response.ofPlainText "Hello world")
 
-module Test =
-    let handler =
-        get "/test" (validation "testingtdtdtdt" |> Output.from)
-
 module User =
     module Create =
-        let workflow (ctx: HttpContext) =
+        let workflow =
             let user: User =
                 { Id = Guid.Empty
                   Name = "Teste34441"
                   Email = "A@aa.com" }
-
-            Output.from (User.create <| getContext ctx <| user) ctx
+            //todo get user from json
+            Service.run User.create user
 
         let handler = post "/users" (workflow)
 
@@ -67,8 +63,8 @@ module Student =
         let handler = get "/students/{id:Guid}" paramsHandler
 
     module Create =
-        let workflow (student: Student) (ctx: HttpContext) =
-            Output.from (Student.create <| getContext ctx <| student) ctx
+        let workflow (student: Student) =
+            Service.run Student.create student
 
         let jsonHandler: HttpHandler =
             let handleOk (person: Student) : HttpHandler = workflow person
@@ -84,8 +80,8 @@ module Registration =
         id
 
     module Create =
-        let workflow (reg: Registration) (ctx: HttpContext) =
-            Output.from (Registration.create <| getContext ctx <| reg) ctx
+        let workflow (reg: Registration) =
+            Service.run Registration.create reg
 
         let handle: HttpHandler =
             let handleOk id (reg: Registration) : HttpHandler = workflow reg
@@ -112,8 +108,8 @@ module Registration =
             get "/students/{id:Guid}/registrations" handle
 
     module Delete =
-        let workflow id (ctx: HttpContext) =
-            Output.from (Registration.delete <| getContext ctx <| id) ctx
+        let workflow id =
+            Service.run Registration.delete id
 
         let idMap (route: RouteCollectionReader) =
             route.GetGuid "nId" Guid.Empty
@@ -133,8 +129,8 @@ module Locality =
         let handler = get "/localities" workflow
 
     module Create =
-        let workflow (locality: Locality) (ctx: HttpContext) =
-            Output.from (Locality.create <| getContext ctx <| locality) ctx
+        let workflow (locality: Locality) =
+            Service.run Locality.create locality
 
         let jsonHandler: HttpHandler = Request.bindJson workflow handleError
 
@@ -152,13 +148,12 @@ module Course =
         let handler = get "/courses" workflow
 
     module Create =
-        let workflow (course: Course) (ctx: HttpContext) =
-            Output.from (Course.create <| getContext ctx <| course) ctx
+        let workflow (course: Course) =
+            Service.run Course.create course
 
         let jsonHandler: HttpHandler = Request.bindJson workflow handleError
 
-        let handler = post "/courses" jsonHandler
-        let handlerPut = put "/courses" jsonHandler
+        let handler = all "/courses" [POST, jsonHandler; PUT, jsonHandler]
 
 //module Create =
 //    let workflow (ctx: HttpContext) =
@@ -169,7 +164,6 @@ module Course =
 
 let all =
     [ Home.handler
-      Test.handler
       User.Create.handler
       User.Get.handler
       Student.Create.handler
@@ -179,7 +173,6 @@ let all =
       Locality.Get.handler
       Course.Get.handler
       Course.Create.handler
-      Course.Create.handlerPut
       Registration.Get.handler
       Registration.Create.handler
       Registration.Delete.handler ]
