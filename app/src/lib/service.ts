@@ -10,13 +10,13 @@ export class Service {
   private token: any;
 
 
-  constructor() {
+  constructor(token) {
 
     this.api = "http://localhost:5000/"
-    this.token = "";
+    this.token = token;
     this.headers = {
       'Content-Type': 'application/json',
-      // 'Authorization': `bearer ${this.token}`
+      'Authorization': `bearer ${this.token}`
     }
   };
 
