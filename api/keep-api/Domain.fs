@@ -26,7 +26,9 @@ type Locality =
 type User =
     { Id: Guid
       Name: string
-      Email: string }
+      Email: string
+      Password: string
+      }
     interface IEntity with
         member this.Id = this.Id
 

@@ -8,13 +8,18 @@ open MongoDB.Driver
 open Microsoft.FSharp.Linq
 open System.Linq
 
-
-let output id (result:DeleteResult) =
-    if result.DeletedCount > 0 then succeed id
-        else validation "Erro ao deletar item"
+let output id (result: DeleteResult) =
+    if result.DeletedCount > 0 then
+        succeed id
+    else
+        validation "Erro ao deletar item"
 
 module User =
     let collectionName = "User"
+
+    let getOne (ctx: IMongoContext) (email: string) =
+        ctx.Query<User>(collectionName)
+        |> Seq.tryFind (fun x -> x.Email = email)
 
     let countDuplicates (ctx: IMongoContext) (user: User) =
         let db = ctx.Collection(collectionName)
@@ -72,7 +77,7 @@ module Locality =
 
 module Course =
     let collectionName = "Course"
-    
+
     let save (ctx: IMongoContext) (entity: Course) =
         let db = ctx.Collection<Course>(collectionName)
 
@@ -92,10 +97,9 @@ module Course =
 
 module Student =
     let collectionName = "Student"
-    
-    let getLocality (ctx: IMongoContext) (entity: Student) =
-        true
-    
+
+    let getLocality (ctx: IMongoContext) (entity: Student) = true
+
     let save (ctx: IMongoContext) (entity: Student) =
         let db = ctx.Collection<Student>(collectionName)
 
@@ -114,9 +118,10 @@ module Student =
 
 module Registration =
     let collectionName = "Registration"
-    
-    let save (ctx: IMongoContext) (entity:Registration ) =
-        let db = ctx.Collection<Registration>(collectionName)
+
+    let save (ctx: IMongoContext) (entity: Registration) =
+        let db =
+            ctx.Collection<Registration>(collectionName)
 
         let filter =
             Builders.Filter.Eq((fun (x: Registration) -> x.Id), entity.Id)
@@ -130,15 +135,17 @@ module Registration =
                 succeed entity
         with
         | ex -> fromException ex
-        
+
     let delete (ctx: IMongoContext) id =
-        let db = ctx.Collection<Registration>(collectionName)
+        let db =
+            ctx.Collection<Registration>(collectionName)
+
         let filter =
             Builders.Filter.Eq((fun (x: Registration) -> x.Id), id)
-        
+
         db.DeleteOne(filter) |> output id
-        
-       
+
+
 //testing postgres
 //module Person =
 //    open Dapper.FSharp

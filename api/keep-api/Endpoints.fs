@@ -19,19 +19,27 @@ let handleError error : HttpHandler =
 
 module Home =
     let handler =
-        get "/" (Response.ofPlainText "Hello world")
+        get "/" (Response.ofPlainText "WELCOME HOME")
 
 module User =
     module Create =
-        let workflow =
-            let user: User =
-                { Id = Guid.Empty
-                  Name = "Teste34441"
-                  Email = "A@aa.com" }
-            //todo get user from json
-            Service.run User.create user
+        let workflow (user: User) (ctx: HttpContext) =
 
-        let handler = post "/users" (workflow)
+            let context = ctx.GetService<IMongoContext>()
+
+            let settings =
+                ctx.GetService<Security.SecuritySettings>()
+
+            Output.from
+                (User.create
+                 <| context
+                 <| Security.hashPassword settings
+                 <| user)
+                ctx
+
+        let jsonHandler: HttpHandler = Request.bindJson workflow handleError
+
+        let handler = post "/users" (jsonHandler)
 
     module Get =
         let workflow (ctx: HttpContext) =
@@ -63,8 +71,7 @@ module Student =
         let handler = get "/students/{id:Guid}" paramsHandler
 
     module Create =
-        let workflow (student: Student) =
-            Service.run Student.create student
+        let workflow (student: Student) = Service.run Student.create student
 
         let jsonHandler: HttpHandler =
             let handleOk (person: Student) : HttpHandler = workflow person
@@ -80,8 +87,7 @@ module Registration =
         id
 
     module Create =
-        let workflow (reg: Registration) =
-            Service.run Registration.create reg
+        let workflow (reg: Registration) = Service.run Registration.create reg
 
         let handle: HttpHandler =
             let handleOk id (reg: Registration) : HttpHandler = workflow reg
@@ -108,12 +114,10 @@ module Registration =
             get "/students/{id:Guid}/registrations" handle
 
     module Delete =
-        let workflow id =
-            Service.run Registration.delete id
+        let workflow id = Service.run Registration.delete id
 
-        let idMap (route: RouteCollectionReader) =
-            route.GetGuid "nId" Guid.Empty
-        
+        let idMap (route: RouteCollectionReader) = route.GetGuid "nId" Guid.Empty
+
         let handle: HttpHandler = Request.mapRoute idMap workflow
 
         let handler =
@@ -129,8 +133,7 @@ module Locality =
         let handler = get "/localities" workflow
 
     module Create =
-        let workflow (locality: Locality) =
-            Service.run Locality.create locality
+        let workflow (locality: Locality) = Service.run Locality.create locality
 
         let jsonHandler: HttpHandler = Request.bindJson workflow handleError
 
@@ -148,19 +151,25 @@ module Course =
         let handler = get "/courses" workflow
 
     module Create =
-        let workflow (course: Course) =
-            Service.run Course.create course
+        let workflow (course: Course) = Service.run Course.create course
 
         let jsonHandler: HttpHandler = Request.bindJson workflow handleError
 
-        let handler = all "/courses" [POST, jsonHandler; PUT, jsonHandler]
+        let handler =
+            all "/courses" [ POST, jsonHandler; PUT, jsonHandler ]
 
-//module Create =
-//    let workflow (ctx: HttpContext) =
-//        let result = Effects.Person.create ()
-//        (Response.ofPlainText "ok") ctx
-//
-//    let handler = post "/test-postgres" (workflow)
+module Login =
+    open Security
+
+    let workflow (loginRequest: LoginRequest) (ctx: HttpContext) =
+        let context = ctx.GetService<IMongoContext>()
+        let settings = ctx.GetService<SecuritySettings>()
+        Output.from (login context settings loginRequest) ctx
+
+    let jsonHandler: HttpHandler = Request.bindJson workflow handleError
+
+    let handler = post "/login" jsonHandler
+
 
 let all =
     [ Home.handler
@@ -175,4 +184,6 @@ let all =
       Course.Create.handler
       Registration.Get.handler
       Registration.Create.handler
-      Registration.Delete.handler ]
+      Registration.Delete.handler
+      Login.handler
+      ]

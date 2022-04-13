@@ -3,7 +3,7 @@ module KeepApi.SharedKernel
 
 open System
 
-type ErrorType = NotFound | Validation | InvalidInput | InternalError
+type ErrorType = NotFound | Validation | InvalidInput | InternalError | Forbidden
 
 type ErrorResult = 
   { ErrorType: ErrorType; ErrorMessages: List<string> }
@@ -20,7 +20,8 @@ let succeed a = Success a
 
 let fail a = Failure { ErrorType = ErrorType.InternalError; ErrorMessages = []}
 let failWith err = Failure err
-let validate a = Failure { ErrorType = ErrorType.InvalidInput; ErrorMessages = [a]}
+let validate message = Failure { ErrorType = ErrorType.InvalidInput; ErrorMessages = [message]}
+let forbid message = Failure { ErrorType = ErrorType.Forbidden; ErrorMessages = [message]}
 
 let fromError errorType errorMessage  = 
    Failure { ErrorType = errorType; ErrorMessages = [errorMessage]}

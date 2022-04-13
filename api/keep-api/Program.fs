@@ -4,6 +4,7 @@ open Falco
 open Falco.Routing
 open Falco.HostBuilder
 
+open KeepApi.Security
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.AspNetCore.Hosting
@@ -19,9 +20,10 @@ let exceptionHandler: HttpHandler =
     Response.withStatusCode 500
     >> Response.ofPlainText "Server error"
 
-let configureServices (context: IMongoContext) (services: IServiceCollection) =
+let configureServices (context: IMongoContext) (securitySettings:SecuritySettings) (services: IServiceCollection) =
     services
         .AddSingleton<IMongoContext>(context)
+        .AddSingleton<SecuritySettings>(securitySettings)
         .AddCors()
         .AddFalco()
     |> ignore
@@ -57,9 +59,20 @@ let configureWebHost (endpoints: HttpEndpoint list) (webHost: IWebHostBuilder) =
 
     let mongoContext = MongoContext(settings) :> IMongoContext
 
+    let securitySection =
+        appConfiguration.GetSection("Security")
+        
+    let securitySettings: SecuritySettings =
+        { JwtSecurityKey = securitySection.GetValue("JwtSecurityKey")
+          JwtIssuer = securitySection.GetValue("JwtIssuer")
+          JwtAudience = securitySection.GetValue("JwtAudience")
+          TokenExpirationTime = securitySection.GetValue("TokenExpirationTime")
+          Salt = securitySection.GetValue("Salt")
+          Iterations = securitySection.GetValue("Iterations") }
+
     webHost
         .UseConfiguration(appConfiguration)
-        .ConfigureServices(configureServices mongoContext)
+        .ConfigureServices(configureServices mongoContext securitySettings)
         .Configure(configureApp endpoints)
 
 [<EntryPoint>]

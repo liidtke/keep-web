@@ -9,6 +9,7 @@ let errorStatusCode (serviceError:ErrorResult) =
   | Validation -> Response.withStatusCode 409
   | InvalidInput -> Response.withStatusCode 400
   | InternalError -> Response.withStatusCode 500
+  | Forbidden -> Response.withStatusCode 403
 
 let errorHandler (serviceError:ErrorResult) : HttpHandler =
    errorStatusCode serviceError >> Response.ofPlainText serviceError.ErrorMessage

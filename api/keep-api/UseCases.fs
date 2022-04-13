@@ -86,15 +86,21 @@ module User =
                 validation "Email Inválido"
             else
                 succeed user
+        
+        let validatePassword =
+            if user.Password = "" || user.Password.Length < 6 then
+                validation "Senha Inválida"
+            else
+                succeed user
 
-        validateName |> join validateEmail
+        validateName |> join validateEmail |> join validatePassword
 
     let validateCreation (user: User) =
         if user.Id = Guid.Empty then
             succeed user
         else
             validation "Id"
-
+    
     let validateDuplicates (effect: User -> int64) (user: User) =
         let max = if user.Id = Guid.Empty then 0 else 1
 
@@ -103,12 +109,15 @@ module User =
         else
             succeed user
 
-    //>> bind validateCreation
+    let passwordToHash (hashEffect: string -> string) (user: User)  =
+        succeed {user with Password = hashEffect user.Password }
+
     let create db =
-        let workflow saveEffect valEffect =
+        let workflow saveEffect valEffect hashEffect =
             validateUser
             >> may validateCreation
             >> may (validateDuplicates valEffect)
+            >> may (passwordToHash hashEffect)
             >> may saveEffect
 
         workflow
