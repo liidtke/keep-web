@@ -51,10 +51,23 @@ module User =
 module Student =
     module Get =
         let allWorkflow (ctx: HttpContext) =
-            (Queries.Student.getAll (getContext ctx)
+            (Queries.Student.getAll <| getContext ctx
              |> Response.ofJson)
                 ctx
 
+        let someWorkflow (search:string) (ctx: HttpContext)  =
+            (Queries.Student.filter <| getContext ctx <| search |> Response.ofJson) ctx
+        
+        let workflow (search:string) (ctx: HttpContext) =
+            if search = String.Empty then allWorkflow ctx
+            else someWorkflow search ctx
+        
+        let paramsHandler : HttpHandler =
+            let queryMap (query: QueryCollectionReader) =
+                query.GetString "filter" ""
+            
+            Request.mapQuery queryMap workflow
+        
         let handler = get "/students" allWorkflow
 
     module GetOne =
@@ -158,6 +171,21 @@ module Course =
         let handler =
             all "/courses" [ POST, jsonHandler; PUT, jsonHandler ]
 
+module Question =
+    module Get =
+        let workflow (ctx: HttpContext) =
+            (Queries.Question.getAll (getContext ctx)
+             |> Response.ofJson)
+                ctx
+
+        let handler = get "/questions" workflow
+        
+    module Create =
+        let workflow (question:Question) = Service.run Question.create question
+        let jsonHandler: HttpHandler = Request.bindJson workflow handleError
+        let handler = all "/localities" [ POST, jsonHandler; PUT, jsonHandler ]
+
+
 module Login =
     open Security
 
@@ -185,5 +213,7 @@ let all =
       Registration.Get.handler
       Registration.Create.handler
       Registration.Delete.handler
+      Question.Get.handler
+      Question.Create.handler
       Login.handler
       ]

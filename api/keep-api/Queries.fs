@@ -16,6 +16,11 @@ module Course =
         let collection = ctx.Query<Course>("Course")
         toList collection
 
+module Question =
+    let getAll (ctx: IMongoContext) =
+        let collection = ctx.Query<Question>("Question")
+        toList collection
+
 module User =
     let getAll (ctx: IMongoContext) =
         let collection = ctx.Query<User>("User")
@@ -56,9 +61,9 @@ module Student =
     let filter (ctx: IMongoContext) (search:string) =
         let collection = ctx.Query<Student>("Student")
         let q = query {
-            for p in collection do
-            where (p.Name.Contains(search))
-            select p
+            for student in collection do
+            where (student.Name.Contains(search) || student.Number = search || student.Registration = search )
+            select student
             take 50
         }
         toList q

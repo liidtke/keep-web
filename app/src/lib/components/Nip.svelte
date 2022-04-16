@@ -29,7 +29,9 @@
   });
 
   onDestroy(async () => {
-      mask.destroy();
+    if(mask){
+          mask.destroy();
+      }
   });
 
   function changed(){

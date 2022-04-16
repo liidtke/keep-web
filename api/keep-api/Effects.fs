@@ -146,6 +146,27 @@ module Registration =
         db.DeleteOne(filter) |> output id
 
 
+module Question =
+    let collectionName = "Question"
+
+    let save (ctx: IMongoContext) (entity: Question) =
+        let db =
+            ctx.Collection<Question>(collectionName)
+
+        let filter =
+            Builders.Filter.Eq((fun (x: Question) -> x.Id), entity.Id)
+
+        try
+            if entity.Id = Guid.Empty then
+                db.InsertOne(entity)
+                succeed entity
+            else
+                db.ReplaceOne(filter, entity) |> ignore
+                succeed entity
+        with
+        | ex -> fromException ex
+    
+
 //testing postgres
 //module Person =
 //    open Dapper.FSharp

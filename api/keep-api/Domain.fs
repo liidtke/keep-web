@@ -33,6 +33,17 @@ type User =
         member this.Id = this.Id
 
 [<CLIMutable>]
+type Question = {
+    Id:Guid
+    Text:string
+}
+
+type Answer = {
+    Question: Question
+    Text: string
+}
+
+[<CLIMutable>]
 type Student =
     { Id: Guid
       Name: string
@@ -48,6 +59,7 @@ type Student =
       CreationDate: DateTime
       CreatedBy: string
       Observation: string option
+      //Answers: List<Answer> option
       }
 
 [<CLIMutable>]

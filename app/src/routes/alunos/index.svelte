@@ -45,6 +45,7 @@
       </tr>
     </thead>
     <tbody>
+      {#if $students.length}
       {#each $students as std }
 
       <tr>
@@ -65,6 +66,7 @@
         </td>
       </tr>
       {/each}
+      {/if}
      
     </tbody>
   </table>

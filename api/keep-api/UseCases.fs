@@ -182,3 +182,12 @@ module Registration =
         workflow <| Effects.Registration.save db
         
     let delete db = Effects.Registration.delete db
+    
+module Question =
+    let validate (q:Question) =
+        if q.Text = String.Empty || q.Text.Length > 500 then validation "Texto inválido"
+        else succeed q
+    
+    let create db =
+        let workflow saveEffect = validate >> may saveEffect
+        workflow <| Effects.Question.save db
