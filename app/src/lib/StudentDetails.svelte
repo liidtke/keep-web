@@ -1,17 +1,26 @@
 <script lang="ts">
   import DateInput from "$lib/components/DateInput.svelte";
   import LocalitySelect from "$lib/components/LocalitySelect.svelte";
+  import QuestionSelect from "$lib/components/QuestionSelect.svelte";
   import { onMount } from "svelte";
   import type { IStudent } from "./types";
-  import { service } from '$lib/store';
 
   export let student: IStudent;
 
-  onMount(async () => {
-    if(student){
-     
+  $:{
+    if(!student.Answers){
+     student.Answers = [];
     }
+  }
+
+  onMount(async () => {
+    
   })
+
+  function addAnswer(){
+    student.Answers.unshift({} as any);
+    student.Answers = student.Answers;
+  }
 
 </script>
 
@@ -83,6 +92,22 @@
     </div>
   </div>
 </div>
+
+{#if student.Answers}
+<div class="row">
+  <h3>Perguntas e Respostas</h3>
+  <div class="col-6">
+    <button class="p--button" on:click={addAnswer}>Adicionar</button>
+  </div>
+  <div class="col-12">
+    {#each student.Answers as answer}
+    <QuestionSelect bind:selected={answer.Question}></QuestionSelect>
+    <label for="ans">Resposta</label>
+    <input type="text" name="" id="ans" bind:value={answer.Text} placeholder="Resposta">
+    {/each}
+  </div>
+</div>
+{/if}
 
 <style>
   .student {

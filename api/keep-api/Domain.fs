@@ -59,7 +59,7 @@ type Student =
       CreationDate: DateTime
       CreatedBy: string
       Observation: string option
-      //Answers: List<Answer> option
+      Answers: List<Answer> option
       }
 
 [<CLIMutable>]

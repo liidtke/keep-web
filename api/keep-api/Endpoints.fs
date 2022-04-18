@@ -183,7 +183,7 @@ module Question =
     module Create =
         let workflow (question:Question) = Service.run Question.create question
         let jsonHandler: HttpHandler = Request.bindJson workflow handleError
-        let handler = all "/localities" [ POST, jsonHandler; PUT, jsonHandler ]
+        let handler = all "/questions" [ POST, jsonHandler; PUT, jsonHandler ]
 
 
 module Login =

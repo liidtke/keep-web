@@ -1,6 +1,6 @@
 import { Result } from '$lib/result'
-import { localities } from './store';
-import type { ICourse, IRegistration, IStudent } from './types';
+import { localities, questions } from './store';
+import type { ICourse, IQuestion, IRegistration, IStudent } from './types';
 import dateConverter from "$lib/date-converter";
 
 export class Service {
@@ -302,10 +302,71 @@ export class Service {
     }
 
     if(!this.locLoaded || reload){
-      this.locPromise = await this.getLocalities();
+      this.locPromise = this.getLocalities();
       let locs = await this.locPromise;
       localities.set(locs);
       this.locLoaded = true;
+    }
+  }
+
+  private questionsLoaded:boolean = false;
+  private questionPromise:any;
+
+  async loadQuestions(reload = false){
+    if(this.questionPromise){
+      await this.questionPromise;
+    }
+
+    if(!this.questionPromise || reload){
+      this.questionPromise = this.getQuestions();
+      let items = await this.questionPromise;
+      questions.set(items);
+      this.questionsLoaded = true;
+    }
+  }
+
+  async getQuestions() :Promise<IQuestion[]> {
+    let request = await fetch(this.api + `questions`, {
+      headers: this.headers,
+    });
+    let response = await request.json();
+    return response;
+  }
+
+  async saveQuestion(question:IQuestion) {
+    let res: Response;
+
+    try {
+      let url = `${this.api}questions`;
+
+      if (question.Id) {
+        res = await fetch(url, {
+          method: 'PUT',
+          body: JSON.stringify(question),
+          headers: this.headers,
+        });
+      }
+      else {
+        res = await fetch(url, {
+          method: 'POST',
+          headers: this.headers,
+          body: JSON.stringify(question)
+        })
+      }
+    }
+    catch (e) {
+      console.log(e);
+      return Result.Error("Não foi possível realizar a operação")
+    }
+
+    if (res.ok) {
+      let data = await res.json();
+      return Result.Ok(data);
+    }
+    else {
+      let message = await res.text();
+      console.log(message);
+      return Result.Error(message);
     }
   }
 

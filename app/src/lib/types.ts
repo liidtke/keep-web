@@ -1,7 +1,8 @@
 export enum AsideType {
   Student,
   Course,
-  Locality
+  Locality,
+  Questions
 }
 
 export interface ILocality {
@@ -32,6 +33,7 @@ export interface IStudent {
   AdmissionDate:Date;
   CreationDate:Date;
   CreatedBy?:string;
+  Answers?:IAnswer[];
 }
 
 export interface ICourse {
@@ -56,4 +58,15 @@ export interface IRegistration{
   IsCompleted:boolean;
   StartDate:Date;
   Id?:string
+}
+
+
+export interface IAnswer{
+  Question:IQuestion;
+  Text:string;
+}
+
+export interface IQuestion{
+  Id?:string;
+  Text:string;
 }

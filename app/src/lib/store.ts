@@ -14,5 +14,6 @@ export const locality = writable({});
 export const students = writable([]);
 export const course = writable({});
 export const courses = writable([]);
+export const questions = writable([]);
 
 export const service = writable(new Service(""));
