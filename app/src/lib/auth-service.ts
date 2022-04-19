@@ -45,10 +45,13 @@ export class AuthService {
   }
 
   public logout(){
+    Cookies.remove('Keep-JWT')
+    Cookies.remove('Keep-expiration')
+    Cookies.remove('Keep-refresh')
     isAuthenticated.set(false);
-    document.cookie = `Keep-JWT=; path=/; secure;  SameSite=Strict`;
-    document.cookie = `Keep-expiration=; path=/; secure;  SameSite=Strict `;
-    document.cookie = `Keep-refresh=; path=/; secure;  SameSite=Strict`;
+    //document.cookie = `Keep-JWT=; path=/; secure;  SameSite=Strict`;
+    //document.cookie = `Keep-expiration=; path=/; secure;  SameSite=Strict `;
+    //document.cookie = `Keep-refresh=; path=/; secure;  SameSite=Strict`;
   }
 
   public reload(){

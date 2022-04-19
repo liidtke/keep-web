@@ -11,7 +11,7 @@
 
   async function load() {
     if ($localities == null || $localities.length == 0) {
-      await $service.loadLocalities();
+      await $service.loadLocalities(true);
       
     }
 

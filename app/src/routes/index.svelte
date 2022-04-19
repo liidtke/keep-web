@@ -23,7 +23,7 @@
 					<li class="p-list__item is-ticked">Cadastro de Alunos</li>
 					<li class="p-list__item is-ticked">Cadastro de Cursos</li>
 					<li class="p-list__item is-ticked">Progresso dos Estudos dos Alunos</li>
-					<li class="p-list__item is-crossed">Cadastro de Perguntas</li>
+					<li class="p-list__item is-ticked">Cadastro de Perguntas</li>
 					<li class="p-list__item is-ticked">Cadastro de Localidades</li>
 					<li class="p-list__item is-crossed">Modelos de Carta</li>
 				</ul>

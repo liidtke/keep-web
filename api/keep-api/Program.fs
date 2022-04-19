@@ -1,17 +1,19 @@
 module KeepApi.Program
 
+open System
+open System.Text
 open Falco
-open Falco.Routing
 open Falco.HostBuilder
-
+open Microsoft.AspNetCore.Authentication.JwtBearer
 open KeepApi.Security
+open Microsoft.AspNetCore.Authorization
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
-open Microsoft.AspNetCore.Builder
 open DataAccess
+open Microsoft.IdentityModel.Tokens
 
 // ------------
 // Exception Handler
@@ -20,7 +22,44 @@ let exceptionHandler: HttpHandler =
     Response.withStatusCode 500
     >> Response.ofPlainText "Server error"
 
-let configureServices (context: IMongoContext) (securitySettings:SecuritySettings) (services: IServiceCollection) =
+
+let configureServices (context: IMongoContext) (securitySettings: SecuritySettings) (services: IServiceCollection) =
+
+    let validationParameters: TokenValidationParameters =
+        new TokenValidationParameters(
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidAudience = securitySettings.JwtAudience,
+            ValidIssuer = securitySettings.JwtIssuer,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securitySettings.JwtSecurityKey)),
+            ClockSkew = TimeSpan.Zero
+        )
+
+    services
+        .AddAuthentication(fun options ->
+            options.DefaultAuthenticateScheme <- JwtBearerDefaults.AuthenticationScheme
+            options.DefaultChallengeScheme <- JwtBearerDefaults.AuthenticationScheme
+            options.DefaultScheme <- JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(fun options ->
+            options.SaveToken <- true
+            options.RequireHttpsMetadata <- false
+            options.TokenValidationParameters <- validationParameters)
+    |> ignore
+
+    let pol = (new AuthorizationPolicyBuilder())
+                            .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                            .RequireAuthenticatedUser()
+                            .Build()
+
+    let policy = (new AuthorizationPolicyBuilder()).RequireClaim("Permission", "User").Build()
+    
+    services.AddAuthorization(fun auth ->
+        auth.AddPolicy("Bearer", pol)
+        auth.AddPolicy("User", policy)
+        )
+    |> ignore
+
     services
         .AddSingleton<IMongoContext>(context)
         .AddSingleton<SecuritySettings>(securitySettings)
@@ -39,7 +78,10 @@ let configureApp: HttpEndpoint list -> IApplicationBuilder -> unit =
     fun endpoints app ->
         app.UseCors(fun options -> configureCors options)
         |> ignore
-
+        
+        app.UseAuthentication() |> ignore
+        app.UseAuthorization() |> ignore
+        
         app.UseFalco(endpoints) |> ignore
 
 let configureWebHost (endpoints: HttpEndpoint list) (webHost: IWebHostBuilder) =
@@ -59,9 +101,8 @@ let configureWebHost (endpoints: HttpEndpoint list) (webHost: IWebHostBuilder) =
 
     let mongoContext = MongoContext(settings) :> IMongoContext
 
-    let securitySection =
-        appConfiguration.GetSection("Security")
-        
+    let securitySection = appConfiguration.GetSection("Security")
+
     let securitySettings: SecuritySettings =
         { JwtSecurityKey = securitySection.GetValue("JwtSecurityKey")
           JwtIssuer = securitySection.GetValue("JwtIssuer")

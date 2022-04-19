@@ -20,6 +20,7 @@ module Security =
                   Name = "Teste34441"
                   Email = "A@aa.com"
                   Password = "vIJP5xKSZjx89IaxWH+75fi64BnOdY8epwkzoe5rY7k="
+                  IsVerified = true
                   }
                 
             let settings:SecuritySettings = {

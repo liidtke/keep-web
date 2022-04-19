@@ -1,6 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+  import { AuthService } from '$lib/auth-service';
+  import {isAuthenticated} from '$lib/store';
+  import { goto } from "$app/navigation";
 	import logo from './keep-logo.svg';
+
+  function logout(){
+    let service = new AuthService();
+    service.logout();
+    goto("/login");
+
+  }
 </script>
 
 <header id="navigation" class="p-navigation">
@@ -36,6 +46,14 @@
           <a class="p-navigation__link" sveltekit:prefetch href="/sobre">Sobre</a>
         </li> -->
         
+      </ul>
+
+      <ul class="p-navigation__items">
+        {#if $isAuthenticated}
+        <li class="p-navigation__item" >
+          <a class="p-navigation__link" on:click={logout}>Sair</a>
+        </li>
+        {/if}
       </ul>
     </nav>
   </div>

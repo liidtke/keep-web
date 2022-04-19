@@ -29,7 +29,9 @@ type LoginRequest = { Email: string; Password: string }
 let getClaims (user: User) =
     [ Claim("Email", user.Email)
       Claim("UserId", user.Id.ToString())
-      Claim("Name", user.Name) ]
+      Claim("Name", user.Name)
+      Claim(ClaimTypes.Role, if user.IsVerified then "User" else "Anon")
+      ]
 
 let generateToken (config: SecuritySettings) (user: User) =
     let symmetricKey =

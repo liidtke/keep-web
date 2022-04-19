@@ -28,6 +28,7 @@ type User =
       Name: string
       Email: string
       Password: string
+      IsVerified: bool
       }
     interface IEntity with
         member this.Id = this.Id
