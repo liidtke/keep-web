@@ -42,6 +42,9 @@
         <li class="p-navigation__item" class:is-selected={$page.url.pathname === "/perguntas"} >
           <a class="p-navigation__link" sveltekit:prefetch href="/perguntas">Perguntas</a>
         </li>
+        <li class="p-navigation__item" class:is-selected={$page.url.pathname === "/users"} >
+          <a class="p-navigation__link" sveltekit:prefetch href="/users">Usuários</a>
+        </li>
         <!-- <li class="p-navigation__item" class:is-selected={$page.url.pathname === "/sobre"} >
           <a class="p-navigation__link" sveltekit:prefetch href="/sobre">Sobre</a>
         </li> -->

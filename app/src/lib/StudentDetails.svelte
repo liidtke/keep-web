@@ -96,16 +96,19 @@
 {#if student.Answers}
 <div class="row">
   <h3>Perguntas e Respostas</h3>
-  <div class="col-6">
+  <div class="col-12">
     <button class="p--button" on:click={addAnswer}>Adicionar</button>
   </div>
-  <div class="col-12">
-    {#each student.Answers as answer}
+  {#each student.Answers as answer}
+  <div class="col-6">
     <QuestionSelect bind:selected={answer.Question}></QuestionSelect>
+    
+  </div>
+  <div class="col-6">
     <label for="ans">Resposta</label>
     <input type="text" name="" id="ans" bind:value={answer.Text} placeholder="Resposta">
-    {/each}
   </div>
+  {/each}
 </div>
 {/if}
 

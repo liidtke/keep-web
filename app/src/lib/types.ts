@@ -60,7 +60,6 @@ export interface IRegistration{
   Id?:string
 }
 
-
 export interface IAnswer{
   Question:IQuestion;
   Text:string;
@@ -69,4 +68,13 @@ export interface IAnswer{
 export interface IQuestion{
   Id?:string;
   Text:string;
+}
+
+export interface IUser{
+  Id?: string;
+  Name: string;
+  Email: string;
+  Password: string;
+  IsVerified: boolean;
+  _edit?:boolean;
 }

@@ -21,6 +21,13 @@ module User =
         ctx.Query<User>(collectionName)
         |> Seq.tryFind (fun x -> x.Email = email)
 
+    /// Searches fos the original user in the database
+    let getById (ctx: IMongoContext) (user: User) =
+        let u = ctx.Query<User>(collectionName) |> Seq.tryFind (fun x -> x.Id = user.Id)
+        match u with
+        | Some u -> succeed u
+        | None _ -> validation "Usuário não encontrado"
+    
     let countDuplicates (ctx: IMongoContext) (user: User) =
         let db = ctx.Collection(collectionName)
 

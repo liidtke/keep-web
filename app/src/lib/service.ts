@@ -1,6 +1,6 @@
 import { Result } from '$lib/result'
 import { localities, questions } from './store';
-import type { ICourse, IQuestion, IRegistration, IStudent } from './types';
+import type { ICourse, IQuestion, IRegistration, IStudent, IUser } from './types';
 import dateConverter from "$lib/date-converter";
 
 export class Service {
@@ -65,7 +65,7 @@ export class Service {
     }
   }
 
-  async getCourses() :Promise<ICourse[]> {
+  async getCourses(): Promise<ICourse[]> {
     let request = await fetch(this.api + `courses`, {
       headers: this.headers,
     });
@@ -73,10 +73,10 @@ export class Service {
     return response;
   }
 
-  async saveCourse(course:ICourse) {
+  async saveCourse(course: ICourse) {
     let res: Response;
     let n = Number(course.Lessons);
-    if(isNaN(n)){
+    if (isNaN(n)) {
       return Result.Error("Valor Inválido");
     }
     course.Lessons = n;
@@ -122,7 +122,7 @@ export class Service {
     });
     try {
       let students = await request.json();
-      
+
       return students;
     }
     catch {
@@ -136,7 +136,7 @@ export class Service {
     });
     try {
       let student = await request.json();
-      
+
       return student;
     }
     catch {
@@ -144,19 +144,19 @@ export class Service {
     }
   }
 
-  async saveStudent(student:IStudent) {
+  async saveStudent(student: IStudent) {
     let val = this.validateStudent(student);
-    if(val.isError){
+    if (val.isError) {
       return val;
     }
-    
+
     let res: Response;
 
     try {
       console.log('trying', student)
 
       if (student.Id) {
-        
+
         res = await fetch(this.api + 'students', {
           method: 'PUT',
           body: JSON.stringify(student),
@@ -188,33 +188,32 @@ export class Service {
     }
   }
 
-  validateStudent(student:IStudent) {
-    if(!student.LocalityId){
+  validateStudent(student: IStudent) {
+    if (!student.LocalityId) {
       return Result.Error("Localidade Obrigatória");
     }
-    if(student.Name == null){
+    if (student.Name == null) {
       return Result.Error("Nome Obrigatório")
     }
-    if(student.Number == null){
+    if (student.Number == null) {
       return Result.Error("Número Obrigatório")
     }
-    if(student.Registration == null){
+    if (student.Registration == null) {
       return Result.Error("Matrícula Obrigatória")
     }
-    if(student.AdmissionDate == null){
+    if (student.AdmissionDate == null) {
       return Result.Error("Data de Admissão Obrigatória")
     }
 
     return Result.Succeed();
   }
 
+  async saveRegistration(registration: IRegistration) {
 
-  async saveRegistration(registration:IRegistration) {
-    
-    if(!registration.StudentId){
+    if (!registration.StudentId) {
       return Result.Error("Aluno não encontrado")
     }
-    
+
     let res: Response;
 
     try {
@@ -252,10 +251,10 @@ export class Service {
     }
   }
 
-  async deleteRegistration(registration){
+  async deleteRegistration(registration) {
     let res: Response;
 
-    try{
+    try {
       let url = `${this.api}students/${registration.StudentId}/registrations/${registration.Id}`;
       res = await fetch(url, {
         method: 'DELETE',
@@ -278,14 +277,14 @@ export class Service {
     }
   }
 
-  async getRegistrations(studentId:string){
+  async getRegistrations(studentId: string) {
     let url = `${this.api}students/${studentId}/registrations`;
     let request = await fetch(url, {
       headers: this.headers,
     });
     try {
       let items = await request.json();
-      
+
       return items;
     }
     catch {
@@ -293,15 +292,15 @@ export class Service {
     }
   }
 
-  private locLoaded:boolean = false;
-  private locPromise:any;
+  private locLoaded: boolean = false;
+  private locPromise: any;
 
-  async loadLocalities(reload = false){
-    if(this.locPromise){
+  async loadLocalities(reload = false) {
+    if (this.locPromise) {
       await this.locPromise;
     }
 
-    if(!this.locLoaded || reload){
+    if (!this.locLoaded || reload) {
       this.locPromise = this.getLocalities();
       let locs = await this.locPromise;
       localities.set(locs);
@@ -309,15 +308,15 @@ export class Service {
     }
   }
 
-  private questionsLoaded:boolean = false;
-  private questionPromise:any;
+  private questionsLoaded: boolean = false;
+  private questionPromise: any;
 
-  async loadQuestions(reload = false){
-    if(this.questionPromise){
+  async loadQuestions(reload = false) {
+    if (this.questionPromise) {
       await this.questionPromise;
     }
 
-    if(!this.questionPromise || reload){
+    if (!this.questionPromise || reload) {
       this.questionPromise = this.getQuestions();
       let items = await this.questionPromise;
       questions.set(items);
@@ -325,7 +324,7 @@ export class Service {
     }
   }
 
-  async getQuestions() :Promise<IQuestion[]> {
+  async getQuestions(): Promise<IQuestion[]> {
     let request = await fetch(this.api + `questions`, {
       headers: this.headers,
     });
@@ -333,7 +332,7 @@ export class Service {
     return response;
   }
 
-  async saveQuestion(question:IQuestion) {
+  async saveQuestion(question: IQuestion) {
     let res: Response;
 
     try {
@@ -366,6 +365,68 @@ export class Service {
     else {
       let message = await res.text();
       console.log(message);
+      return Result.Error(message);
+    }
+  }
+
+
+  //USER
+
+  async getUsers(): Promise<IUser[]> {
+    let request = await fetch(this.api + `users`, {
+      headers: this.headers,
+    });
+    let response = await request.json();
+    return response;
+  }
+
+  async getUser(id) {
+    let request = await fetch(this.api + `users/${id}`, {
+      headers: this.headers,
+    });
+    try {
+      let student = await request.json();
+
+      return student;
+    }
+    catch {
+      return null;
+    }
+  }
+
+  async saveUser(user: IUser) {
+    //todo front-end validations
+
+    let res: Response;
+
+    try {
+      if (user.Id) {
+
+        res = await fetch(this.api + 'users/' + user.Id , {
+          method: 'PUT',
+          body: JSON.stringify(user),
+          headers: this.headers,
+        });
+      }
+      else {
+        res = await fetch(this.api + 'users', {
+          method: 'POST',
+          headers: this.headers,
+          body: JSON.stringify(user)
+        })
+      }
+    }
+    catch (e) {
+      console.log(e);
+      return Result.Error("Não foi possível realizar a operação")
+    }
+
+    if (res.ok) {
+      let data = await res.json();
+      return Result.Ok(data);
+    }
+    else {
+      let message = await res.text();
       return Result.Error(message);
     }
   }

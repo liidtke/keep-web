@@ -17,12 +17,15 @@ let handleError error : HttpHandler =
     Response.withStatusCode 400
     >> Response.ofPlainText message
 
-let handleInvalidAuth : HttpHandler =
-        Response.withStatusCode 403 
-        >> Response.ofPlainText "Forbidden"
+let handleInvalidAuth: HttpHandler =
+    Response.withStatusCode 403
+    >> Response.ofPlainText "Forbidden"
 
-let secureHandler (ok: HttpHandler) : HttpHandler  = Request.ifAuthenticated ok handleInvalidAuth
-let verySecureHandler (ok: HttpHandler) : HttpHandler  = Request.ifAuthenticatedInRole ["User"] ok handleInvalidAuth
+let secureHandler (ok: HttpHandler) : HttpHandler =
+    Request.ifAuthenticated ok handleInvalidAuth
+
+let verySecureHandler (ok: HttpHandler) : HttpHandler =
+    Request.ifAuthenticatedInRole [ "User" ] ok handleInvalidAuth
 
 module Home =
     let handler =
@@ -48,12 +51,22 @@ module User =
 
         let handler = post "/users" (jsonHandler)
 
+    module Update =
+        let workflow user = Service.run UseCases.User.update user
+
+        let jsonHandler: HttpHandler =
+            verySecureHandler
+            <| Request.bindJson workflow handleError
+
+        let handler = put "/users/{id:Guid}" jsonHandler
+
     module Get =
         let workflow (ctx: HttpContext) =
             let data = Queries.User.getAll (getContext ctx)
             (data |> Response.ofJson) ctx
 
-        let handler = get "/users" (verySecureHandler workflow)
+        let handler =
+            get "/users" (verySecureHandler workflow)
 
 module Student =
     module Get =
@@ -62,20 +75,24 @@ module Student =
              |> Response.ofJson)
                 ctx
 
-        let someWorkflow (search:string) (ctx: HttpContext)  =
-            (Queries.Student.filter <| getContext ctx <| search |> Response.ofJson) ctx
-        
-        let workflow (search:string) (ctx: HttpContext) =
-            if search = String.Empty then allWorkflow ctx
-            else someWorkflow search ctx
-        
-        let paramsHandler : HttpHandler =
-            let queryMap (query: QueryCollectionReader) =
-                query.GetString "filter" ""
-            
+        let someWorkflow (search: string) (ctx: HttpContext) =
+            (Queries.Student.filter <| getContext ctx <| search
+             |> Response.ofJson)
+                ctx
+
+        let workflow (search: string) (ctx: HttpContext) =
+            if search = String.Empty then
+                allWorkflow ctx
+            else
+                someWorkflow search ctx
+
+        let paramsHandler: HttpHandler =
+            let queryMap (query: QueryCollectionReader) = query.GetString "filter" ""
+
             Request.mapQuery queryMap workflow
-        
-        let handler = get "/students" (verySecureHandler allWorkflow)
+
+        let handler =
+            get "/students" (verySecureHandler allWorkflow)
 
     module GetOne =
         let workflow id (ctx: HttpContext) =
@@ -88,7 +105,8 @@ module Student =
 
             Request.mapRoute routeMap workflow
 
-        let handler = get "/students/{id:Guid}" (verySecureHandler paramsHandler)
+        let handler =
+            get "/students/{id:Guid}" (verySecureHandler paramsHandler)
 
     module Create =
         let workflow (student: Student) = Service.run Student.create student
@@ -99,7 +117,10 @@ module Student =
             Request.bindJson handleOk handleError
 
         let handler =
-            all "/students" [ POST, verySecureHandler jsonHandler; PUT, verySecureHandler jsonHandler ]
+            all
+                "/students"
+                [ POST, verySecureHandler jsonHandler
+                  PUT, verySecureHandler jsonHandler ]
 
 module Registration =
     let routeMap (route: RouteCollectionReader) =
@@ -115,10 +136,11 @@ module Registration =
             let handleJson id =
                 Request.bindJson (handleOk id) handleError
 
-            Request.mapRoute routeMap handleJson
+            verySecureHandler
+            <| Request.mapRoute routeMap handleJson
 
         let handler =
-            all "/students/{id:Guid}/registrations" [ POST, verySecureHandler handle; PUT, verySecureHandler handle ]
+            all "/students/{id:Guid}/registrations" [ POST, handle; PUT, handle ]
 
     module Get =
         let workflow id (ctx: HttpContext) =
@@ -155,10 +177,13 @@ module Locality =
     module Create =
         let workflow (locality: Locality) = Service.run Locality.create locality
 
-        let jsonHandler: HttpHandler = Request.bindJson workflow handleError
+        let jsonHandler: HttpHandler = secureHandler <| Request.bindJson workflow handleError
 
         let handler =
-            all "/localities" [ POST, secureHandler jsonHandler; PUT, secureHandler jsonHandler ]
+            all
+                "/localities"
+                [ POST, jsonHandler
+                  PUT, jsonHandler ]
 
 module Course =
     module Get =
@@ -174,9 +199,12 @@ module Course =
         let workflow (course: Course) = Service.run Course.create course
 
         let jsonHandler: HttpHandler = Request.bindJson workflow handleError
-        
+
         let handler =
-            all "/courses" [ POST, verySecureHandler jsonHandler; PUT, verySecureHandler jsonHandler ]
+            all
+                "/courses"
+                [ POST, verySecureHandler jsonHandler
+                  PUT, verySecureHandler jsonHandler ]
 
 module Question =
     module Get =
@@ -185,12 +213,18 @@ module Question =
              |> Response.ofJson)
                 ctx
 
-        let handler = get "/questions" (secureHandler workflow)
-        
+        let handler =
+            get "/questions" (secureHandler workflow)
+
     module Create =
-        let workflow (question:Question) = Service.run Question.create question
+        let workflow (question: Question) = Service.run Question.create question
         let jsonHandler: HttpHandler = Request.bindJson workflow handleError
-        let handler = all "/questions" [ POST, verySecureHandler jsonHandler; PUT, verySecureHandler jsonHandler ]
+
+        let handler =
+            all
+                "/questions"
+                [ POST, verySecureHandler jsonHandler
+                  PUT, verySecureHandler jsonHandler ]
 
 
 module Login =
@@ -210,6 +244,7 @@ let all =
     [ Home.handler
       User.Create.handler
       User.Get.handler
+      User.Update.handler
       Student.Create.handler
       Student.Get.handler
       Student.GetOne.handler
@@ -222,5 +257,4 @@ let all =
       Registration.Delete.handler
       Question.Get.handler
       Question.Create.handler
-      Login.handler
-      ]
+      Login.handler ]

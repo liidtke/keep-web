@@ -35,7 +35,7 @@
   }
 
   function addUser(){
-
+    goto("/login/cadastrar")
   }
 </script>
 
