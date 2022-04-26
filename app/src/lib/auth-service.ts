@@ -8,7 +8,7 @@ export class AuthService {
 
   api:string;
   constructor(){
-    this.api = API_URL as any ?? 'http://localhost:5000';
+    this.api = API_URL as string;
   }
 
   headers = {
@@ -17,14 +17,15 @@ export class AuthService {
 
   public async login(user:string, pwd:string){
     let body = {Email:user, Password:pwd, "grantType": "password"};
-    let request = await fetch(this.api + '/login', {
+    let request = await fetch(this.api + 'login', {
       method:'POST',
       body:JSON.stringify(body),
       headers:this.headers
     });
 
     if(request.ok){
-      this.setup(await request.json())
+      let data = await request.json()
+      this.setup(data)
       return Result.Succeed();
     }
     else{
@@ -33,9 +34,12 @@ export class AuthService {
   }
 
   private setup(data){
-    isAuthenticated.set(true);
     this.saveToken(data);
-    service.set(new Service(data.token));
+    
+    let tokenized = new Service(data.Token); 
+    
+    service.set(tokenized);
+    isAuthenticated.set(true);
   }
 
   private saveToken(security){
@@ -64,6 +68,7 @@ export class AuthService {
     if(token){
       isAuthenticated.set(true);
       service.set(new Service(token));
+      console.log("reloading.. setting service with token");
       return true;
     }
     else{

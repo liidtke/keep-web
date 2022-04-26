@@ -1,6 +1,7 @@
 import { Result } from '$lib/result'
 import { localities, questions } from './store';
 import type { ICourse, IQuestion, IRegistration, IStudent, IUser } from './types';
+import { API_URL } from '$lib/Env';
 import dateConverter from "$lib/date-converter";
 
 export class Service {
@@ -9,10 +10,8 @@ export class Service {
   private headers: any;
   private token: any;
 
-
   constructor(token) {
-
-    this.api = "http://localhost:5000/"
+    this.api = API_URL as string;
     this.token = token;
     this.headers = {
       'Content-Type': 'application/json',

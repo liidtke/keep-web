@@ -1,6 +1,10 @@
 
 <script lang="ts">
+	import "../../app.css";
 	import { onMount, afterUpdate, beforeUpdate } from 'svelte';
+	import Snackbar from "$lib/components/Snackbar.svelte";
+	import { snackMessage, showMessage, isAuthenticated } from "$lib/store";
+
 
 	
 	beforeUpdate(async () => {
@@ -14,6 +18,7 @@
 </main>
 
 
+<Snackbar bind:message={$snackMessage} bind:show={$showMessage} />
 
 <style>
 	main{

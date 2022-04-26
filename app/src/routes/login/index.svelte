@@ -22,7 +22,7 @@
       if (res.isSuccess) {
         goto("/");
       } else {
-        console.log(res);
+        //console.log(res);
         message = res.message;
       }
     }

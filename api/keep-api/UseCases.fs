@@ -126,7 +126,7 @@ module User =
         let max = if user.Id = Guid.Empty then 0 else 1
 
         if effect user > max then
-            validation "Usuário já existe"
+            validation "Usuário já cadastrado"
         else
             succeed user
 
@@ -134,7 +134,7 @@ module User =
         let max = if emailChanged then 0 else 1
 
         if effect user > max then
-            validation "Usuário já existe"
+            validation "Usuário já cadastrado"
         else
             succeed user
 

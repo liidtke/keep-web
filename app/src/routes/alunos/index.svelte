@@ -3,7 +3,15 @@
   import { goto } from "$app/navigation";
   import { AsideType } from "$lib/types";
   import { onMount } from "svelte";
+  import type { Service } from "$lib/service";
 
+  let api:Service;
+  service.subscribe((s) => {
+    api = s;
+    //console.log("updating service instance")
+  })
+
+  
   onMount(async () => {
     currentAside.set(AsideType.Student);
     get();
@@ -14,7 +22,8 @@
   }
 
   async function get(){
-    let sts = await $service.getStudents();
+    console.log("getting students");
+    let sts = await api.getStudents();
     students.set(sts);
   }
 

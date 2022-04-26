@@ -1,6 +1,8 @@
 <script lang="ts">
   import { service, snackMessage, showMessage } from "$lib/store";
-  import EmailInput from "$lib/components/EmailInput.svelte"
+  import EmailInput from "$lib/components/EmailInput.svelte";
+  import { goto } from "$app/navigation";
+
 
   let user: any = {};
   let message: string = null;
@@ -11,7 +13,7 @@
     if(result.isSuccess){
       snackMessage.set("Usuário adicionado com sucesso");
       showMessage.set(true);
-      clean();
+      goto("/login")
     }
     else message = result.message;
   }
