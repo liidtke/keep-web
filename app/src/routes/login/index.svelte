@@ -43,7 +43,7 @@
   <title>Login</title>
 </svelte:head>
 
-<h1 class="login-header">Login Cadastro de Alunos - Keep </h1>
+<h1 class="login-header">Login - Cadastro de Alunos</h1>
 <div class="grp">
   <div class="login--container ">
     <div class="login" autocomplete="on">
