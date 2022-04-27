@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="DataAccess.fs" />
+    <Compile Include="SharedKernel.fs" />
+    <Compile Include="Domain.fs" />
+    <Compile Include="Effects.fs" />
+    <Compile Include="Output.fs" />
+    <Compile Include="Security.fs" />
+    <Compile Include="UseCases.fs" />
+    <Compile Include="Models.fs" />
+    <Compile Include="Queries.fs" />
+    <Compile Include="Service.fs" />
+    <Compile Include="Tests.fs" />
+    <Compile Include="Endpoints.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="Dapper.FSharp" Version="3.2.0" />
+    <PackageReference Include="Falco" Version="3.1.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+    <PackageReference Include="MongoDB.Bson" Version="2.14.1" />
+    <PackageReference Include="MongoDB.Driver" Version="2.14.1" />
+    <PackageReference Include="Npgsql" Version="6.0.3" />
+    <PackageReference Update="FSharp.Core" Version="6.0.3" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>
