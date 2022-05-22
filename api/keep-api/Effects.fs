@@ -21,7 +21,7 @@ module User =
         ctx.Query<User>(collectionName)
         |> Seq.tryFind (fun x -> x.Email = email)
 
-    /// Searches fos the original user in the database
+    /// Searches for the original user in the database
     let getById (ctx: IMongoContext) (user: User) =
         let u = ctx.Query<User>(collectionName) |> Seq.tryFind (fun x -> x.Id = user.Id)
         match u with

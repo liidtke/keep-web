@@ -115,8 +115,10 @@ export class Service {
     }
   }
 
-  async getStudents() {
-    let request = await fetch(this.api + `students`, {
+  async getStudents(search = null) {
+    let params = search ? new URLSearchParams({filter:search}) : '';
+
+    let request = await fetch(this.api + `students?` + params, {
       headers: this.headers,
     });
     try {

@@ -51,14 +51,12 @@ module Student =
          let collection = ctx.Query<Student>("Student")
          collection |> Seq.tryFind (fun x -> x.Id = id)
 
-         //let result = collection.FirstOrDefault(fun x -> x.Id = id)
+    let search (ctx: IMongoContext) (text:string) =
+        let collection = ctx.Query<Student>("Student")
+        collection |> Seq.filter (fun x -> x.Name.Contains(text) || x.Number = text || x.Registration = text) |> Seq.toList
          
-//         if result.Id = Guid.Empty then
-//            None
-//         else
-//            Some result
-         
-    let filter (ctx: IMongoContext) (search:string) =
+    let filter (ctx: IMongoContext) (filter:string) =
+        let search = filter.ToUpper()
         let collection = ctx.Query<Student>("Student")
         let q = query {
             for student in collection do

@@ -92,7 +92,7 @@ module Student =
             Request.mapQuery queryMap workflow
 
         let handler =
-            get "/students" (verySecureHandler allWorkflow)
+            get "/students" (verySecureHandler paramsHandler)
 
     module GetOne =
         let workflow id (ctx: HttpContext) =

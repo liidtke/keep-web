@@ -77,7 +77,11 @@ module Student =
     let prepare (student: Student) =
         { student with
               CreatedBy = "system"
-              CreationDate = DateTime.UtcNow }
+              CreationDate = DateTime.UtcNow
+              Name = student.Name.ToUpper()
+              Number = student.Number.ToUpper()
+              Registration = student.Registration.ToUpper()
+               }
 
     let create db =
         let workflow locationEffect saveEffect =
