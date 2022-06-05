@@ -16,6 +16,7 @@
   onMount(async () => {
     currentAside.set(AsideType.Student);
     get();
+    $service.loadLocalities(true);
   });
 
   function navigate(id) {
