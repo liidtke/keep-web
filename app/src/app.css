@@ -51,3 +51,13 @@ body {
 .lessons input{
 	margin-bottom: 0px !important;
 }
+
+
+.fr{
+	float: right;
+}
+
+.inline {
+margin-bottom: 0;
+margin-right: 0;
+}

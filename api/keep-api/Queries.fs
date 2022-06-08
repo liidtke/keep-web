@@ -42,29 +42,38 @@ module Locality =
         toList collection
 
 module Student =
-    let getAll (ctx: IMongoContext) =
-        let collection = ctx.Query<Student>("Student")
-        collection
-            .Take(50)
-            .ToList()
+    type StudentFilters =  {Filter: string; Order:string }
+    
     let getOne (ctx: IMongoContext) (id:Guid) =
          let collection = ctx.Query<Student>("Student")
          collection |> Seq.tryFind (fun x -> x.Id = id)
-
+    
+    let sortMe (order:string) (query:IQueryable<Student>)  =
+        if order = "latest" then query.OrderByDescending(fun x -> x.CreationDate)
+        else query.OrderBy(fun x -> x.Name)
+    
+    let getAll (ctx: IMongoContext) (order:string) =
+        let collection = ctx.Query<Student>("Student")
+        collection.Take(500) |> sortMe order |> Seq.toList
+    
+    let filter (ctx: IMongoContext) (filters:StudentFilters) =
+        if String.IsNullOrEmpty(filters.Filter) then getAll ctx filters.Order
+        else
+            let search = filters.Filter.ToUpper()
+            let collection = ctx.Query<Student>("Student")
+            let q = query {
+                for student in collection do
+                where (student.Name.Contains(search) || student.Number = search || student.Registration = search )
+                select student
+                take 50
+            }
+            q |> sortMe filters.Order |> Seq.toList
+        
     let search (ctx: IMongoContext) (text:string) =
         let collection = ctx.Query<Student>("Student")
-        collection |> Seq.filter (fun x -> x.Name.Contains(text) || x.Number = text || x.Registration = text) |> Seq.toList
-         
-    let filter (ctx: IMongoContext) (filter:string) =
-        let search = filter.ToUpper()
-        let collection = ctx.Query<Student>("Student")
-        let q = query {
-            for student in collection do
-            where (student.Name.Contains(search) || student.Number = search || student.Registration = search )
-            select student
-            take 50
-        }
-        toList q
+        collection
+        |> Seq.filter (fun x -> x.Name.Contains(text) || x.Number = text || x.Registration = text)
+        |> Seq.toList
         
     let registrations (ctx: IMongoContext) studentId =
         let collection = ctx.Query<Registration>("Registration")

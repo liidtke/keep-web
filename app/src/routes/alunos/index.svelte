@@ -4,9 +4,11 @@
   import { AsideType } from "$lib/types";
   import { onMount } from "svelte";
   import type { Service } from "$lib/service";
+  import dateConverter from "$lib/date-converter";
 
   let api: Service;
-  let search:string;
+  let search: string;
+  let order: string = "name";
 
   service.subscribe((s) => {
     api = s;
@@ -25,23 +27,35 @@
 
   async function get() {
     console.log("getting students");
-    let sts = await api.getStudents();
+    let sts = await api.getStudents(search, order);
     students.set(sts);
   }
 
-  $:{
-    performSearch(search)
+  $: {
+    performSearch(search);
   }
 
   async function performSearch(search) {
-    if(search && search.length > 2){
-      let sts = await api.getStudents(search);
+    if (search && search.length > 2) {
+      let sts = await api.getStudents(search, order);
       students.set(sts);
-    }
-    else if(!search){
+    } else if (!search) {
       await get();
     }
   }
+
+  async function orderByName() {
+    order = "name";
+    get();
+    
+  }
+
+  async function orderByLatest() {
+    order = "latest";
+    get();
+  }
+
+
 </script>
 
 <svelte:head>
@@ -54,35 +68,49 @@
 
   <div class="p-form">
     <div class="row">
-      <div class="col-8 col-medium-4 col-small-2">
+      <div class="col-2 col-medium-2 col-small-1">
         <button class="p-button--brand" on:click={() => isOpen.set(true)}>
           <span>Novo Aluno</span>
         </button>
       </div>
-    
 
-    <div class="col-4 col-medium-2 col-small-2">
-      <input
-        type="search"
-        id="search"
-        class="p-search-box__input"
-        name="search"
-        placeholder="Buscar"
-        autocomplete="on"
-        bind:value={search}
-      />
+      <div class="col-6 col-medium-2 col-small-1">
+        
+        <button class="p-button fr inline" on:click={orderByLatest}>
+          <i class="p-icon--chevron-up"></i>
+          <span>Recentes</span>
+        </button>
+        
+        <button class="p-button fr inline" on:click={orderByName}>
+          <i class="p-icon--chevron-down"></i>
+          <span>Nome</span>
+        </button>
+
+
+      </div>
+
+      <div class="col-4 col-medium-2 col-small-2">
+        <input
+          type="search"
+          id="search"
+          class="p-search-box__input"
+          name="search"
+          placeholder="Buscar"
+          autocomplete="on"
+          bind:value={search}
+        />
+      </div>
     </div>
-  </div>
   </div>
 
   <table aria-label="alunos">
     <thead>
       <tr>
         <th>Nome</th>
-        <th>Número</th>
         <th>Matrícula</th>
-        <!-- <th>Admissão</th> -->
-        <th>Observações</th>
+        <th>Número</th>
+        <th>Admissão</th>
+        <!-- <th>Observações</th> -->
         <th />
       </tr>
     </thead>
@@ -91,10 +119,10 @@
         {#each $students as std}
           <tr>
             <td>{std.Name ?? ""}</td>
-            <td>{std.Number}</td>
             <td>{std.Registration ?? ""}</td>
-            <!-- <td>{student.Admission ?? ''}</td> -->
-            <td>{std.Observation ?? ""}</td>
+            <td>{std.Number ?? ""}</td>
+            <td>{dateConverter.toString(std.AdmissionDate) ?? ""}</td>
+            <!-- <td>{std.Observation ?? ""}</td> -->
             <td>
               <button
                 class="u-toggle is-dense"

@@ -69,25 +69,17 @@ module User =
             get "/users" (verySecureHandler workflow)
 
 module Student =
+    open Queries.Student
     module Get =
-        let allWorkflow (ctx: HttpContext) =
-            (Queries.Student.getAll <| getContext ctx
-             |> Response.ofJson)
-                ctx
-
-        let someWorkflow (search: string) (ctx: HttpContext) =
-            (Queries.Student.filter <| getContext ctx <| search
-             |> Response.ofJson)
-                ctx
-
-        let workflow (search: string) (ctx: HttpContext) =
-            if search = String.Empty then
-                allWorkflow ctx
-            else
-                someWorkflow search ctx
+      
+        let workflow (filters: StudentFilters) (ctx: HttpContext) =
+            (filter <| getContext ctx <| filters |> Response.ofJson) ctx
 
         let paramsHandler: HttpHandler =
-            let queryMap (query: QueryCollectionReader) = query.GetString "filter" ""
+            let queryMap (query: QueryCollectionReader) =
+                let filter = query.GetString "filter" ""
+                let order = query.GetString "order" ""
+                { Filter = filter; Order = order }
 
             Request.mapQuery queryMap workflow
 
