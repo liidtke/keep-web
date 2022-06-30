@@ -18,7 +18,7 @@
     }
 
     onMount(async () => {
-        if (today) {
+        if (today && !value) {
             let date = dateConverter.now();
             value = date;
         }
