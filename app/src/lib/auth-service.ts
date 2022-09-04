@@ -6,8 +6,8 @@ import Cookies from 'js-cookie'
 
 export class AuthService {
 
-  api:string;
-  constructor(){
+  api: string;
+  constructor() {
     this.api = API_URL as string;
   }
 
@@ -15,77 +15,83 @@ export class AuthService {
     'Content-Type': 'application/json',
   }
 
-  public async login(user:string, pwd:string){
-    let body = {Email:user, Password:pwd, "grantType": "password"};
-    let request = await fetch(this.api + 'login', {
-      method:'POST',
-      body:JSON.stringify(body),
-      headers:this.headers
-    });
+  public async login(user: string, pwd: string) {
+    let body = { Email: user, Password: pwd, "grantType": "password" };
+    try {
 
-    if(request.ok){
-      let data = await request.json()
-      this.setup(data)
-      return Result.Succeed();
+      let request = await fetch(this.api + 'login', {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: this.headers
+      });
+
+      if (request.ok) {
+        let data = await request.json()
+        this.setup(data)
+        return Result.Succeed();
+      }
+      else {
+        return Result.Error(await request.text());
+      }
     }
-    else{
-      return Result.Error(await request.text());
+    catch {
+      return Result.Error("Erro ao realizar login");
     }
   }
 
-  private setup(data){
+  private setup(data) {
     this.saveToken(data);
-    
-    let tokenized = new Service(data.Token); 
-    
+
+    let tokenized = new Service(data.Token);
+
     service.set(tokenized);
     isAuthenticated.set(true);
   }
 
-  private saveToken(security){
+  private saveToken(security) {
     document.cookie = `Keep-JWT=${security.Token}; path=/; secure;  SameSite=Strict`;
     document.cookie = `Keep-expiration=${security.Expiration}; path=/; secure;  SameSite=Strict `;
     document.cookie = `Keep-refresh=${security.RefreshToken}; path=/; secure;  SameSite=Strict`;
   }
 
-  public logout(){
+  public logout() {
     Cookies.remove('Keep-JWT')
     Cookies.remove('Keep-expiration')
     Cookies.remove('Keep-refresh')
     isAuthenticated.set(false);
   }
 
-  public reload(){
-    if(!this.isValidExpiration()){
+  public reload() {
+    if (!this.isValidExpiration()) {
       //this.refreshToken();
       return false;
     }
 
     let token = Cookies.get('Keep-JWT');
-    if(token){
+    if (token) {
       isAuthenticated.set(true);
       service.set(new Service(token));
       console.log("reloading.. setting service with token");
       return true;
     }
-    else{
+    else {
       return false;
     }
   }
 
-  private refreshToken(){
+  private refreshToken() {
 
   }
 
-  private getExpiration(){
+  private getExpiration() {
     let ex = Cookies.get('Keep-expiration');
-    if(ex){
+    if (ex) {
       return new Date(ex);
     }
     else return null;
   }
 
-  private isValidExpiration(){
+  private isValidExpiration() {
     let exDate = this.getExpiration();
     return exDate && new Date() < exDate;
   }

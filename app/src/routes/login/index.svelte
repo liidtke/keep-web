@@ -7,7 +7,8 @@
   let pwd: string;
   let email: string;
   let service = new AuthService();
-  let message:string;
+  let message: string;
+  let loading = false;
 
   onMount(async () => {
     if ($isAuthenticated) {
@@ -18,12 +19,15 @@
   async function doit() {
     message = null;
     if (email && pwd) {
+      loading = true;
       let res = await service.login(email, pwd);
       if (res.isSuccess) {
+        loading = false;
         goto("/");
       } else {
         //console.log(res);
         message = res.message;
+        loading = false;
       }
     }
   }
@@ -34,8 +38,8 @@
     }
   }
 
-  function addUser(){
-    goto("/login/cadastrar")
+  function addUser() {
+    goto("/login/cadastrar");
   }
 </script>
 
@@ -47,7 +51,6 @@
 <div class="grp">
   <div class="login--container ">
     <div class="login" autocomplete="on">
-     
       <label for="full-name-stacked" class="p-form__label">Email</label>
       <input
         type="email"
@@ -67,28 +70,31 @@
         on:keypress={keypress}
       />
       {#if message}
-      <div class="p-notification--caution">
-        <div class="p-notification__content">
+        <div class="p-notification--caution">
+          <div class="p-notification__content">
             <p class="p-notification__message">{message}</p>
+          </div>
         </div>
-      </div>
-    {/if}
-      <button class="p-button--brand" on:click={doit}> Login </button>
+      {/if}
+      <button class="p-button--brand" on:click={doit}>
+        {#if loading}
+          <i class="p-icon--spinner u-animation--spin is-light" />
+        {/if}
+        Login
+      </button>
       <button class="" on:click={addUser}> Cadastrar </button>
     </div>
   </div>
 </div>
 
 <style>
-  
-  .login-header{
+  .login-header {
     text-align: center;
     margin-top: 1rem;
-   
   }
 
   .grp {
-    margin-top:2rem;
+    margin-top: 2rem;
     display: flex;
     justify-content: center !important;
   }

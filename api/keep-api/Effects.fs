@@ -23,24 +23,25 @@ module User =
 
     /// Searches for the original user in the database
     let getById (ctx: IMongoContext) (user: User) =
-        let u = ctx.Query<User>(collectionName) |> Seq.tryFind (fun x -> x.Id = user.Id)
+        let u =
+            ctx.Query<User>(collectionName)
+            |> Seq.tryFind (fun x -> x.Id = user.Id)
+
         match u with
         | Some u -> succeed u
         | None _ -> validation "Usuário não encontrado"
-    
+
     let countDuplicates (ctx: IMongoContext) (user: User) =
         let db = ctx.Collection(collectionName)
 
-        let filter =
-            Builders.Filter.Eq((fun (x: User) -> x.Email), user.Email)
+        let filter = Builders.Filter.Eq((fun (x: User) -> x.Email), user.Email)
 
         db.Find(filter).CountDocuments()
 
     let save (ctx: IMongoContext) (user: User) =
         let db = ctx.Collection<User>(collectionName)
 
-        let filter =
-            Builders.Filter.Eq((fun (x: User) -> x.Id), user.Id)
+        let filter = Builders.Filter.Eq((fun (x: User) -> x.Id), user.Id)
 
         try
             if user.Id = Guid.Empty then
@@ -68,8 +69,7 @@ module Locality =
     let save (ctx: IMongoContext) (locality: Locality) =
         let db = ctx.Collection<Locality>(collectionName)
 
-        let filter =
-            Builders.Filter.Eq((fun (x: Locality) -> x.Id), locality.Id)
+        let filter = Builders.Filter.Eq((fun (x: Locality) -> x.Id), locality.Id)
 
         try
             if locality.Id = Guid.Empty then
@@ -88,8 +88,7 @@ module Course =
     let save (ctx: IMongoContext) (entity: Course) =
         let db = ctx.Collection<Course>(collectionName)
 
-        let filter =
-            Builders.Filter.Eq((fun (x: Course) -> x.Id), entity.Id)
+        let filter = Builders.Filter.Eq((fun (x: Course) -> x.Id), entity.Id)
 
         try
             if entity.Id = Guid.Empty then
@@ -110,8 +109,7 @@ module Student =
     let save (ctx: IMongoContext) (entity: Student) =
         let db = ctx.Collection<Student>(collectionName)
 
-        let filter =
-            Builders.Filter.Eq((fun (x: Student) -> x.Id), entity.Id)
+        let filter = Builders.Filter.Eq((fun (x: Student) -> x.Id), entity.Id)
 
         try
             if entity.Id = Guid.Empty then
@@ -123,15 +121,25 @@ module Student =
         with
         | ex -> fromException ex
 
+    let delete (ctx: IMongoContext) (studentId: Guid) =
+        let db = ctx.Collection<Student>(collectionName)
+        let filter = Builders.Filter.Eq((fun (x: Student) -> x.Id), studentId)
+
+        try
+            db.DeleteOne(filter) |> ignore
+            succeed studentId
+        with
+        | ex -> fromException ex
+
+
+
 module Registration =
     let collectionName = "Registration"
 
     let save (ctx: IMongoContext) (entity: Registration) =
-        let db =
-            ctx.Collection<Registration>(collectionName)
+        let db = ctx.Collection<Registration>(collectionName)
 
-        let filter =
-            Builders.Filter.Eq((fun (x: Registration) -> x.Id), entity.Id)
+        let filter = Builders.Filter.Eq((fun (x: Registration) -> x.Id), entity.Id)
 
         try
             if entity.Id = Guid.Empty then
@@ -144,11 +152,9 @@ module Registration =
         | ex -> fromException ex
 
     let delete (ctx: IMongoContext) id =
-        let db =
-            ctx.Collection<Registration>(collectionName)
+        let db = ctx.Collection<Registration>(collectionName)
 
-        let filter =
-            Builders.Filter.Eq((fun (x: Registration) -> x.Id), id)
+        let filter = Builders.Filter.Eq((fun (x: Registration) -> x.Id), id)
 
         db.DeleteOne(filter) |> output id
 
@@ -157,11 +163,9 @@ module Question =
     let collectionName = "Question"
 
     let save (ctx: IMongoContext) (entity: Question) =
-        let db =
-            ctx.Collection<Question>(collectionName)
+        let db = ctx.Collection<Question>(collectionName)
 
-        let filter =
-            Builders.Filter.Eq((fun (x: Question) -> x.Id), entity.Id)
+        let filter = Builders.Filter.Eq((fun (x: Question) -> x.Id), entity.Id)
 
         try
             if entity.Id = Guid.Empty then
@@ -172,7 +176,7 @@ module Question =
                 succeed entity
         with
         | ex -> fromException ex
-    
+
 
 //testing postgres
 //module Person =

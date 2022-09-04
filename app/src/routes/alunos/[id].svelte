@@ -55,10 +55,18 @@
     let result = await $service.saveStudent(student);
     if (result.isError) {
       message = result.message;
-    }
-    else{
+    } else {
       snackMessage.set("Salvo com Sucesso");
       showMessage.set(true);
+    }
+  }
+
+  async function deleteStudent() {
+    let result = await $service.deleteStudent(student);
+    if (result && result.isSuccess) {
+      snackMessage.set("Excluido com sucesso");
+      showMessage.set(true);
+      back();
     }
   }
 
@@ -73,7 +81,7 @@
 </script>
 
 <svelte:head>
-	<title>Detalhes do Aluno</title>
+  <title>Detalhes do Aluno</title>
 </svelte:head>
 
 <div class="p-strip">
@@ -122,4 +130,11 @@
       </div>
     </div>
   {/if}
+  <hr />
+  {#if student}
+    <button class="p-button--negative fr" on:click={deleteStudent}
+      >Excluir Aluno</button
+    >
+  {/if}
 </div>
+

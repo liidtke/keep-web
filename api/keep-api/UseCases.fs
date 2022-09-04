@@ -93,6 +93,9 @@ module Student =
         workflow
         <| Effects.Student.getLocality db
         <| Effects.Student.save db
+    
+    let delete db userId =
+        Effects.Student.delete db userId
 
 module User =
 

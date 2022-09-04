@@ -12,7 +12,8 @@ open SharedKernel
 let getContext (ctx: HttpContext) = ctx.GetService<IMongoContext>()
 
 let handleError error : HttpHandler =
-    let message = sprintf "Invalid JSON: %s" error
+    let message =
+        sprintf "Invalid JSON: %s" error
 
     Response.withStatusCode 400
     >> Response.ofPlainText message
@@ -35,7 +36,8 @@ module User =
     module Create =
         let workflow (user: User) (ctx: HttpContext) =
 
-            let context = ctx.GetService<IMongoContext>()
+            let context =
+                ctx.GetService<IMongoContext>()
 
             let settings =
                 ctx.GetService<Security.SecuritySettings>()
@@ -47,7 +49,8 @@ module User =
                  <| user)
                 ctx
 
-        let jsonHandler: HttpHandler = Request.bindJson workflow handleError
+        let jsonHandler: HttpHandler =
+            Request.bindJson workflow handleError
 
         let handler = post "/users" (jsonHandler)
 
@@ -58,11 +61,14 @@ module User =
             verySecureHandler
             <| Request.bindJson workflow handleError
 
-        let handler = put "/users/{id:Guid}" jsonHandler
+        let handler =
+            put "/users/{id:Guid}" jsonHandler
 
     module Get =
         let workflow (ctx: HttpContext) =
-            let data = Queries.User.getAll (getContext ctx)
+            let data =
+                Queries.User.getAll (getContext ctx)
+
             (data |> Response.ofJson) ctx
 
         let handler =
@@ -70,10 +76,13 @@ module User =
 
 module Student =
     open Queries.Student
+
     module Get =
-      
+
         let workflow (filters: StudentFilters) (ctx: HttpContext) =
-            (filter <| getContext ctx <| filters |> Response.ofJson) ctx
+            (filter <| getContext ctx <| filters
+             |> Response.ofJson)
+                ctx
 
         let paramsHandler: HttpHandler =
             let queryMap (query: QueryCollectionReader) =
@@ -114,6 +123,20 @@ module Student =
                 [ POST, verySecureHandler jsonHandler
                   PUT, verySecureHandler jsonHandler ]
 
+    module Delete =
+        let workflow (id: Guid) = Service.run Student.delete id
+
+        let paramsHandler: HttpHandler =
+            let routeMap (route: RouteCollectionReader) =
+                let id = route.GetGuid "id" Guid.Empty
+                id
+
+            Request.mapRoute routeMap workflow
+
+        let handler =
+            delete "/students/{id:Guid}" (verySecureHandler paramsHandler)
+
+
 module Registration =
     let routeMap (route: RouteCollectionReader) =
         let id = route.GetGuid "id" Guid.Empty
@@ -142,7 +165,8 @@ module Registration =
                  <| id)
                 ctx
 
-        let handle: HttpHandler = Request.mapRoute routeMap workflow
+        let handle: HttpHandler =
+            Request.mapRoute routeMap workflow
 
         let handler =
             get "/students/{id:Guid}/registrations" (verySecureHandler handle)
@@ -152,7 +176,8 @@ module Registration =
 
         let idMap (route: RouteCollectionReader) = route.GetGuid "nId" Guid.Empty
 
-        let handle: HttpHandler = Request.mapRoute idMap workflow
+        let handle: HttpHandler =
+            Request.mapRoute idMap workflow
 
         let handler =
             delete "/students/{id:Guid}/registrations/{nId:Guid}" (verySecureHandler handle)
@@ -169,13 +194,12 @@ module Locality =
     module Create =
         let workflow (locality: Locality) = Service.run Locality.create locality
 
-        let jsonHandler: HttpHandler = secureHandler <| Request.bindJson workflow handleError
+        let jsonHandler: HttpHandler =
+            secureHandler
+            <| Request.bindJson workflow handleError
 
         let handler =
-            all
-                "/localities"
-                [ POST, jsonHandler
-                  PUT, jsonHandler ]
+            all "/localities" [ POST, jsonHandler; PUT, jsonHandler ]
 
 module Course =
     module Get =
@@ -185,12 +209,14 @@ module Course =
              |> Response.ofJson)
                 ctx
 
-        let handler = get "/courses" (secureHandler workflow)
+        let handler =
+            get "/courses" (secureHandler workflow)
 
     module Create =
         let workflow (course: Course) = Service.run Course.create course
 
-        let jsonHandler: HttpHandler = Request.bindJson workflow handleError
+        let jsonHandler: HttpHandler =
+            Request.bindJson workflow handleError
 
         let handler =
             all
@@ -210,7 +236,9 @@ module Question =
 
     module Create =
         let workflow (question: Question) = Service.run Question.create question
-        let jsonHandler: HttpHandler = Request.bindJson workflow handleError
+
+        let jsonHandler: HttpHandler =
+            Request.bindJson workflow handleError
 
         let handler =
             all
@@ -223,11 +251,16 @@ module Login =
     open Security
 
     let workflow (loginRequest: LoginRequest) (ctx: HttpContext) =
-        let context = ctx.GetService<IMongoContext>()
-        let settings = ctx.GetService<SecuritySettings>()
+        let context =
+            ctx.GetService<IMongoContext>()
+
+        let settings =
+            ctx.GetService<SecuritySettings>()
+
         Output.from (login context settings loginRequest) ctx
 
-    let jsonHandler: HttpHandler = Request.bindJson workflow handleError
+    let jsonHandler: HttpHandler =
+        Request.bindJson workflow handleError
 
     let handler = post "/login" jsonHandler
 
@@ -239,6 +272,7 @@ let all =
       User.Update.handler
       Student.Create.handler
       Student.Get.handler
+      Student.Delete.handler
       Student.GetOne.handler
       Locality.Create.handler
       Locality.Get.handler

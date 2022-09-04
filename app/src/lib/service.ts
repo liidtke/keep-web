@@ -116,7 +116,7 @@ export class Service {
   }
 
   async getStudents(search = null, order = null) {
-    let params = new URLSearchParams({filter:search ?? '', order:order ?? ''});
+    let params = new URLSearchParams({ filter: search ?? '', order: order ?? '' });
 
     let request = await fetch(this.api + `students?` + params, {
       headers: this.headers,
@@ -186,6 +186,25 @@ export class Service {
       let message = await res.text();
       console.log(message);
       return Result.Error(message);
+    }
+  }
+
+  async deleteStudent(student: IStudent) {
+    if (!student || !student.Id) {
+      return Result.Error("Aluno inválido");
+    }
+
+    try {
+      let res: Response;
+      res = await fetch(this.api + 'students/' + student.Id, {
+        method: 'DELETE',
+        headers: this.headers,
+      })
+      return Result.Succeed();
+    }
+    catch (e) {
+      console.log(e);
+      return Result.Error("Não foi possível realizar a operação")
     }
   }
 
@@ -403,7 +422,7 @@ export class Service {
     try {
       if (user.Id) {
 
-        res = await fetch(this.api + 'users/' + user.Id , {
+        res = await fetch(this.api + 'users/' + user.Id, {
           method: 'PUT',
           body: JSON.stringify(user),
           headers: this.headers,
