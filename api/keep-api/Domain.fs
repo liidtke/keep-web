@@ -103,3 +103,12 @@ type Letter = {
     Name:string
     Text:string
 }
+
+
+[<CLIMutable>]
+type Delay = {
+    Id:Guid
+    StudentId:Guid
+    StudentName:string
+    CourseName:string
+}

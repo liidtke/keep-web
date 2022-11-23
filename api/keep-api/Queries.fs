@@ -4,6 +4,7 @@ open System
 open KeepApi.Domain
 open KeepApi.DataAccess
 open System.Linq
+open KeepApi.Effects
 open Microsoft.FSharp.Linq
 open FSharp.Linq
 open System.Linq.Expressions;
@@ -78,3 +79,9 @@ module Student =
     let registrations (ctx: IMongoContext) studentId =
         let collection = ctx.Query<Registration>("Registration")
         collection |> Seq.filter (fun x -> x.StudentId = studentId)
+
+module Delay =
+
+  let getAll (ctx: IMongoContext) =
+        let collection = ctx.Query<Delay>("Delay")
+        toList collection

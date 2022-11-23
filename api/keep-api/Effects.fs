@@ -2,6 +2,7 @@ module KeepApi.Effects
 
 open DataAccess
 open Domain
+open KeepApi.Domain
 open SharedKernel
 open System
 open MongoDB.Driver
@@ -34,14 +35,17 @@ module User =
     let countDuplicates (ctx: IMongoContext) (user: User) =
         let db = ctx.Collection(collectionName)
 
-        let filter = Builders.Filter.Eq((fun (x: User) -> x.Email), user.Email)
+        let filter =
+            Builders.Filter.Eq((fun (x: User) -> x.Email), user.Email)
 
         db.Find(filter).CountDocuments()
 
     let save (ctx: IMongoContext) (user: User) =
-        let db = ctx.Collection<User>(collectionName)
+        let db =
+            ctx.Collection<User>(collectionName)
 
-        let filter = Builders.Filter.Eq((fun (x: User) -> x.Id), user.Id)
+        let filter =
+            Builders.Filter.Eq((fun (x: User) -> x.Id), user.Id)
 
         try
             if user.Id = Guid.Empty then
@@ -67,9 +71,11 @@ module Locality =
     let collectionName = "Locality"
 
     let save (ctx: IMongoContext) (locality: Locality) =
-        let db = ctx.Collection<Locality>(collectionName)
+        let db =
+            ctx.Collection<Locality>(collectionName)
 
-        let filter = Builders.Filter.Eq((fun (x: Locality) -> x.Id), locality.Id)
+        let filter =
+            Builders.Filter.Eq((fun (x: Locality) -> x.Id), locality.Id)
 
         try
             if locality.Id = Guid.Empty then
@@ -86,9 +92,11 @@ module Course =
     let collectionName = "Course"
 
     let save (ctx: IMongoContext) (entity: Course) =
-        let db = ctx.Collection<Course>(collectionName)
+        let db =
+            ctx.Collection<Course>(collectionName)
 
-        let filter = Builders.Filter.Eq((fun (x: Course) -> x.Id), entity.Id)
+        let filter =
+            Builders.Filter.Eq((fun (x: Course) -> x.Id), entity.Id)
 
         try
             if entity.Id = Guid.Empty then
@@ -107,9 +115,11 @@ module Student =
     let getLocality (ctx: IMongoContext) (entity: Student) = true
 
     let save (ctx: IMongoContext) (entity: Student) =
-        let db = ctx.Collection<Student>(collectionName)
+        let db =
+            ctx.Collection<Student>(collectionName)
 
-        let filter = Builders.Filter.Eq((fun (x: Student) -> x.Id), entity.Id)
+        let filter =
+            Builders.Filter.Eq((fun (x: Student) -> x.Id), entity.Id)
 
         try
             if entity.Id = Guid.Empty then
@@ -122,8 +132,11 @@ module Student =
         | ex -> fromException ex
 
     let delete (ctx: IMongoContext) (studentId: Guid) =
-        let db = ctx.Collection<Student>(collectionName)
-        let filter = Builders.Filter.Eq((fun (x: Student) -> x.Id), studentId)
+        let db =
+            ctx.Collection<Student>(collectionName)
+
+        let filter =
+            Builders.Filter.Eq((fun (x: Student) -> x.Id), studentId)
 
         try
             db.DeleteOne(filter) |> ignore
@@ -137,9 +150,11 @@ module Registration =
     let collectionName = "Registration"
 
     let save (ctx: IMongoContext) (entity: Registration) =
-        let db = ctx.Collection<Registration>(collectionName)
+        let db =
+            ctx.Collection<Registration>(collectionName)
 
-        let filter = Builders.Filter.Eq((fun (x: Registration) -> x.Id), entity.Id)
+        let filter =
+            Builders.Filter.Eq((fun (x: Registration) -> x.Id), entity.Id)
 
         try
             if entity.Id = Guid.Empty then
@@ -152,20 +167,37 @@ module Registration =
         | ex -> fromException ex
 
     let delete (ctx: IMongoContext) id =
-        let db = ctx.Collection<Registration>(collectionName)
+        let db =
+            ctx.Collection<Registration>(collectionName)
 
-        let filter = Builders.Filter.Eq((fun (x: Registration) -> x.Id), id)
+        let filter =
+            Builders.Filter.Eq((fun (x: Registration) -> x.Id), id)
 
         db.DeleteOne(filter) |> output id
+
+    let getNotCompleted (ctx: IMongoContext) () =
+        let collection =
+            ctx.Query<Registration>(collectionName)
+
+        let q =
+            query {
+                for u in collection do
+                    where (u.IsCompleted = false)
+                    select u
+            }
+
+        List.ofSeq q
 
 
 module Question =
     let collectionName = "Question"
 
     let save (ctx: IMongoContext) (entity: Question) =
-        let db = ctx.Collection<Question>(collectionName)
+        let db =
+            ctx.Collection<Question>(collectionName)
 
-        let filter = Builders.Filter.Eq((fun (x: Question) -> x.Id), entity.Id)
+        let filter =
+            Builders.Filter.Eq((fun (x: Question) -> x.Id), entity.Id)
 
         try
             if entity.Id = Guid.Empty then
@@ -177,6 +209,22 @@ module Question =
         with
         | ex -> fromException ex
 
+
+module Delay =
+    let collectionName = "Delay"
+
+    let insertMany (ctx: IMongoContext) (entities: Delay list) =
+        let db =
+            ctx.Collection<Delay>(collectionName)
+
+
+        db.Database.DropCollection(collectionName)
+
+        try
+            db.InsertMany(entities)
+            succeed entities
+        with
+        | ex -> fromException ex
 
 //testing postgres
 //module Person =

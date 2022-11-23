@@ -78,3 +78,11 @@ export interface IUser{
   IsVerified: boolean;
   _edit?:boolean;
 }
+
+export interface IDelay{
+  Id?: string;
+  StudentId:string;
+  StudentName:string;
+  CourseName:string;
+
+}

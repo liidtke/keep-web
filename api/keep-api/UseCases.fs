@@ -76,12 +76,11 @@ module Student =
 
     let prepare (student: Student) =
         { student with
-              CreatedBy = "system"
-              CreationDate = DateTime.UtcNow
-              Name = student.Name.ToUpper()
-              Number = student.Number.ToUpper()
-              Registration = student.Registration.ToUpper()
-               }
+            CreatedBy = "system"
+            CreationDate = DateTime.UtcNow
+            Name = student.Name.ToUpper()
+            Number = student.Number.ToUpper()
+            Registration = student.Registration.ToUpper() }
 
     let create db =
         let workflow locationEffect saveEffect =
@@ -93,9 +92,8 @@ module Student =
         workflow
         <| Effects.Student.getLocality db
         <| Effects.Student.save db
-    
-    let delete db userId =
-        Effects.Student.delete db userId
+
+    let delete db userId = Effects.Student.delete db userId
 
 module User =
 
@@ -114,7 +112,8 @@ module User =
             | _ -> validation "Email Inválido"
 
         let validatePassword =
-            if user.Id = Guid.Empty && (user.Password = "" || user.Password.Length < 6) then
+            if user.Id = Guid.Empty
+               && (user.Password = "" || user.Password.Length < 6) then
                 validation "Senha Inválida"
             else
                 succeed user
@@ -130,7 +129,8 @@ module User =
             validation "Id"
 
     let validateDuplicates (effect: User -> int64) (user: User) =
-        let max = if user.Id = Guid.Empty then 0 else 1
+        let max =
+            if user.Id = Guid.Empty then 0 else 1
 
         if effect user > max then
             validation "Usuário já cadastrado"
@@ -146,9 +146,7 @@ module User =
             succeed user
 
     let passwordToHash (hashEffect: string -> string) (user: User) =
-        succeed
-            { user with
-                  Password = hashEffect user.Password }
+        succeed { user with Password = hashEffect user.Password }
 
     let create db =
         let workflow saveEffect valEffect hashEffect =
@@ -164,9 +162,9 @@ module User =
 
     let updateUser original modified =
         { original with
-              Email = modified.Email
-              Name = modified.Name
-              IsVerified = modified.IsVerified }
+            Email = modified.Email
+            Name = modified.Name
+            IsVerified = modified.IsVerified }
 
     let update db (user: User) =
         let workflow originalEffect saveEffect valEffect =
@@ -260,3 +258,48 @@ module Question =
     let create db =
         let workflow saveEffect = validate >> may saveEffect
         workflow <| Effects.Question.save db
+
+
+module Delay =
+
+    let hasIncomplete (p: Progress list) =
+        let missing pr =
+            pr.Returned.IsNone
+            && pr.Sent.AddMonths(6) < DateTime.Now
+
+        match p |> List.tryFind missing with
+        | Some i -> true
+        | None -> false
+
+
+    let delayedRegistrations (regs: Registration list) =
+        regs
+        |> List.where (fun r -> hasIncomplete (List.ofSeq r.Progress))
+
+    let createDelay (registration: Registration) (s: Student) : Delay =
+        { Id = Guid.NewGuid()
+          StudentId = s.Id
+          StudentName = s.Name
+          CourseName = registration.Course.Name }
+
+
+    let generate (regs: Registration list) (effect: Guid -> Student option) =
+        regs
+        |> delayedRegistrations
+        |> List.map (fun r ->
+            match effect r.StudentId with
+            | Some student -> Some <| createDelay r student
+            | None -> None)
+        |> List.choose id
+
+    let workflow saveEffect getRegistrationsEffect getStudentEffect =
+        generate
+        <| getRegistrationsEffect ()
+        <| getStudentEffect
+        |> saveEffect
+
+    let handle db () =
+        workflow
+        <| Effects.Delay.insertMany db
+        <| Effects.Registration.getNotCompleted db
+        <| Queries.Student.getOne db

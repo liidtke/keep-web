@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
   import { AuthService } from '$lib/auth-service';
-  import {isAuthenticated} from '$lib/store';
+  import { isAuthenticated } from '$lib/store';
   import { goto } from "$app/navigation";
 	import logo from './keep-logo.svg';
 
@@ -41,6 +41,9 @@
         </li>
         <li class="p-navigation__item" class:is-selected={$page.url.pathname === "/perguntas"} >
           <a class="p-navigation__link" sveltekit:prefetch href="/perguntas">Perguntas</a>
+        </li>
+        <li class="p-navigation__item" class:is-selected={$page.url.pathname === "/atrasos"} >
+          <a class="p-navigation__link" sveltekit:prefetch href="/atrasos">Atrasos</a>
         </li>
         <li class="p-navigation__item" class:is-selected={$page.url.pathname === "/users"} >
           <a class="p-navigation__link" sveltekit:prefetch href="/users">Usuários</a>

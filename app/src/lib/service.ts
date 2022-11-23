@@ -1,6 +1,6 @@
 import { Result } from '$lib/result'
 import { localities, questions } from './store';
-import type { ICourse, IQuestion, IRegistration, IStudent, IUser } from './types';
+import type { ICourse, IQuestion, IRegistration, IStudent, IUser, IDelay} from './types';
 import { API_URL } from '$lib/Env';
 import dateConverter from "$lib/date-converter";
 
@@ -450,5 +450,24 @@ export class Service {
       return Result.Error(message);
     }
   }
+
+  async getDelays(): Promise<IDelay[]> {
+    let request = await fetch(this.api + `delays`, {
+      headers: this.headers,
+    });
+    let response = await request.json();
+    return response;
+  }
+
+  async checkDelays() {
+    let request = await fetch(this.api + `delays`, {
+      method: 'POST',
+      headers: this.headers,
+    });
+    let response = await request.json();
+    return response;
+
+  }
+
 
 }

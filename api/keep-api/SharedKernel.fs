@@ -47,8 +47,8 @@ let join (s1:ServiceOutput<'a>) (s2:ServiceOutput<'a>) =
 
 
 // apply either a success function or failure function
-let successfully successFunc input =
-  match input with
+let successfully successFunc previousOutput =
+  match previousOutput with
   | Success s -> successFunc s
   | Failure e -> failWith e
 

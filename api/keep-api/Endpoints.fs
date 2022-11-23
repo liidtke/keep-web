@@ -247,6 +247,13 @@ module Question =
                   PUT, verySecureHandler jsonHandler ]
 
 
+module Delay =
+    module Get =
+        let getAll (ctx:HttpContext) = (Queries.Delay.getAll <| getContext ctx |> Response.ofJson) ctx
+        let handler = get "/delays" (secureHandler getAll)
+
+    let handler = post "/delays" (Service.run Delay.handle ())
+
 module Login =
     open Security
 
@@ -283,4 +290,6 @@ let all =
       Registration.Delete.handler
       Question.Get.handler
       Question.Create.handler
+      Delay.Get.handler
+      Delay.handler
       Login.handler ]

@@ -9,9 +9,9 @@
     <Compile Include="Effects.fs" />
     <Compile Include="Output.fs" />
     <Compile Include="Security.fs" />
+    <Compile Include="Queries.fs" />
     <Compile Include="UseCases.fs" />
     <Compile Include="Models.fs" />
-    <Compile Include="Queries.fs" />
     <Compile Include="Service.fs" />
     <Compile Include="Tests.fs" />
     <Compile Include="Endpoints.fs" />
