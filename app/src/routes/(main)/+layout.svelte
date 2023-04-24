@@ -5,7 +5,7 @@
 	import { goto } from "$app/navigation";
 	import Snackbar from "$lib/components/Snackbar.svelte";
 	import { onMount } from "svelte";
-	import "../app.css";
+	import "../../app.css";
 	import { AuthService } from "$lib/auth-service";
 
 	onMount(async () => {

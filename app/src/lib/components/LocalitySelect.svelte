@@ -8,14 +8,12 @@
   
   let selected; //internal state
   
-  $:{
-    if ($localities && student && student.LocalityId) {
-      selected = $localities.find((x) => x.Id == student.LocalityId);
-    }
-  }
 
   onMount(async () => {
     await $service.loadLocalities();
+    if ($localities && student && student.LocalityId) {
+      selected = $localities.find((x) => x.Id == student.LocalityId);
+    }
   });
 
   function changed(){

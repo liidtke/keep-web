@@ -1,19 +1,22 @@
 <script lang="ts">
   import { students, service, snackMessage, showMessage } from "$lib/store";
-  import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
   import StudentDetails from "$lib/StudentDetails.svelte";
   import StudentProgress from "$lib/StudentProgress.svelte";
   import type { IStudent } from "$lib/types";
+ import { page } from '$app/stores';
 
-  let id: string = $page.params.id;
+  /** @type {import('./$types').PageData} */
+
+  let id;
   let student: IStudent;
   let notFound: boolean = false;
   let isLoading: boolean = true;
   let message = null;
 
   onMount(async () => {
+    id = $page.params.slug;
     await getStudent();
   });
 
@@ -106,7 +109,7 @@
       <div class="col-12">
         <StudentDetails bind:student />
         <div class="row">
-          <div class="col-6 ">
+          <div class="col-6">
             <button class="p-button--base" on:click={back}>Voltar</button>
             <button class="p-button" on:click={cancel}>Cancelar</button>
             <button class="p-button--positive" on:click={save}>Salvar</button>
@@ -137,4 +140,3 @@
     >
   {/if}
 </div>
-

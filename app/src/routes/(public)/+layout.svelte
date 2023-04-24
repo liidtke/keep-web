@@ -5,8 +5,6 @@
 	import Snackbar from "$lib/components/Snackbar.svelte";
 	import { snackMessage, showMessage, isAuthenticated } from "$lib/store";
 
-
-	
 	beforeUpdate(async () => {
 		
 	});

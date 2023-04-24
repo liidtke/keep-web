@@ -17,6 +17,7 @@
   });
 
   async function doit() {
+    console.log('login clicked')
     message = null;
     if (email && pwd) {
       loading = true;

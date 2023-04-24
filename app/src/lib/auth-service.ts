@@ -8,6 +8,7 @@ export class AuthService {
 
   api: string;
   constructor() {
+    console.log("api", API_URL)
     this.api = API_URL as string;
   }
 
@@ -16,6 +17,7 @@ export class AuthService {
   }
 
   public async login(user: string, pwd: string) {
+    console.log('logging in')
     let body = { Email: user, Password: pwd, "grantType": "password" };
     try {
 
@@ -34,7 +36,8 @@ export class AuthService {
         return Result.Error(await request.text());
       }
     }
-    catch {
+    catch( e) {
+      console.log(e)
       return Result.Error("Erro ao realizar login");
     }
   }
