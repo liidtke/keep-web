@@ -1,14 +1,16 @@
 <script lang="ts">
-  import { isOpen, currentAside, students, service } from "$lib/store";
+  import { isOpen, currentAside, students, service, localities } from "$lib/store";
   import { goto } from "$app/navigation";
   import { AsideType } from "$lib/types";
   import { onMount } from "svelte";
   import type { Service } from "$lib/service";
   import dateConverter from "$lib/date-converter";
+  import LocalitySelect from '$lib/components/LocalitySelect.svelte';
 
   let api: Service;
   let search: string;
   let order: string = "name";
+  let loc;
 
   service.subscribe((s) => {
     api = s;
@@ -36,8 +38,8 @@
   }
 
   async function performSearch(search) {
-    if (search && search.length > 2) {
-      let sts = await api.getStudents(search, order);
+    if (search && search.length > 2 || loc) {
+      let sts = await api.getStudents(search, order, loc.Id);
       students.set(sts);
     } else if (!search) {
       await get();
@@ -53,6 +55,11 @@
   async function orderByLatest() {
     order = "latest";
     get();
+  }
+
+  function locChanged(){
+    console.log('changed', loc)
+    performSearch(search);
   }
 
 
@@ -100,6 +107,16 @@
           bind:value={search}
         />
       </div>
+
+ <select name="localitySelect" id="localitySelect" bind:value={loc} on:change={locChanged}>
+    <option value="">Selecione uma Localidade</option>
+    {#each $localities as loc}
+      <option value={loc}>
+        {loc.Name}
+      </option>
+    {/each}
+  </select>
+
     </div>
   </div>
 

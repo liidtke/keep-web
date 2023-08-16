@@ -265,7 +265,7 @@ module Delay =
     let hasIncomplete (p: Progress list) =
         let missing pr =
             pr.Returned.IsNone
-            && pr.Sent.AddMonths(6) < DateTime.Now
+            && pr.Sent.AddMonths(2) < DateTime.Now
 
         match p |> List.tryFind missing with
         | Some i -> true

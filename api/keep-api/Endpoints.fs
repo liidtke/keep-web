@@ -88,7 +88,8 @@ module Student =
             let queryMap (query: QueryCollectionReader) =
                 let filter = query.GetString "filter" ""
                 let order = query.GetString "order" ""
-                { Filter = filter; Order = order }
+                let loc = query.GetGuid "localityId" Guid.Empty
+                { Filter = filter; Order = order; LocalityId = loc }
 
             Request.mapQuery queryMap workflow
 

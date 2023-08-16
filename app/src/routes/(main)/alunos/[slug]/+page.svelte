@@ -81,6 +81,7 @@
   function back() {
     goto("/alunos/");
   }
+
 </script>
 
 <svelte:head>
