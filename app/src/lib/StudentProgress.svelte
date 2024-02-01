@@ -181,7 +181,7 @@
               <th>Lições</th>
               <th>Enviado</th>
               <th>Recebido</th>
-              <th>Observações</th>
+              <th class="only-pc">Observações</th>
               <th />
             </tr>
           </thead>
@@ -200,17 +200,19 @@
                   <td>
                     {dateConverter.toString(progress.Returned)}
                   </td>
-                  <td>
+                  <td class="only-pc">
                     {progress.Comments ?? ""}
                   </td>
                   <td>
                     <button
-                      class="u-toggle is-dense"
+                      class="p-button has-icon right-floated"
                       aria-controls="expanded-row"
                       aria-expanded="false"
                       data-shown-text="Hide"
                       data-hidden-text="Show"
-                      on:click={() => (progress._edit = true)}>Editar</button
+                      on:click={() => (progress._edit = true)}>
+<i class="p-icon--show"></i>
+                      </button
                     >
                   </td>
                 </tr>

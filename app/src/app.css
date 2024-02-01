@@ -61,3 +61,24 @@ body {
 margin-bottom: 0;
 margin-right: 0;
 }
+
+
+td, th {
+  overflow: visible;
+}
+
+@media(min-width:40rem) {
+ .only-mobile {
+  display:none !important;
+  }
+ }
+
+.only-pc {
+  display:none !important;
+  
+}
+
+.right-floated{
+  float:right;
+}
+
