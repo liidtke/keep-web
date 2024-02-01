@@ -71,10 +71,14 @@ td, th {
  .only-mobile {
   display:none !important;
   }
+.only-pc {
+  display:block !important;
+  
+}
  }
 
 .only-pc {
-  display:none !important;
+  display:none;
   
 }
 
