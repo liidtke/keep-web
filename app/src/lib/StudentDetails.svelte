@@ -88,7 +88,7 @@
     </div>
     <div class="col-6">
       <label for="obs">Observações</label>
-      <input type="text" name="obs" id="obs" bind:value={student.Observation} />
+      <textarea type="textarea" rows="3" name="obs" id="obs" bind:value={student.Observation} />
     </div>
   </div>
 </div>

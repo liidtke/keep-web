@@ -77,7 +77,9 @@ module Student =
                             where (
                                 student.Name.Contains(search)
                                 || student.Number = search
-                                || student.Registration = search
+                                || student.Number.Contains(filters.Filter)
+                                || student.Registration = filters.Filter
+                                || student.Registration.Contains(filters.Filter)
                             )
 
                             select student
